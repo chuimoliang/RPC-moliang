@@ -20,9 +20,9 @@ public class RpcMessage {
     //消息类型
     private byte messageType;
     //序列化类型
-    private byte codec;
+    private byte codecType;
     //请求id
-    private int requestId;
+    //private int requestId;
     //请求数据
     private Object data;
 

@@ -3,6 +3,7 @@ package com.moliang.transport.codec;
 import com.moliang.convention.MyProtocol;
 import com.moliang.convention.enums.SerializationType;
 import com.moliang.entity.RpcMessage;
+import com.moliang.entity.RpcRequest;
 import com.moliang.serialize.KryoUtil;
 import com.moliang.serialize.ProtostuffUtil;
 import com.moliang.serialize.Serializer;
@@ -23,16 +24,22 @@ public class MyEncoder extends MessageToByteEncoder<RpcMessage> {
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, RpcMessage mes, ByteBuf buff) throws Exception {
         try {
-            //写入魔数 四个字节
-            buff.writeInt(MyProtocol.MAGIC_NUMBER);
+            log.info("Start encoding...");
+            /**
+             * 协议
+             *
+             * 魔数 + 版本号 + 消息类型 + 序列化类型 + 数据长度
+             */
+            //写入魔数 5个字节
+            buff.writeBytes(MyProtocol.MAGIC_NUMBER);
             //版本号 一个字节
             buff.writeInt(MyProtocol.VERSION);
             //消息类型 一个字节
             buff.writeByte(mes.getMessageType());
             //序列化类型 一个字节
-            buff.writeByte(mes.getCodec());
+            buff.writeByte(mes.getCodecType());
             byte[] bodyBytes = null;
-            String codecName = SerializationType.getName(mes.getCodec());
+            String codecName = SerializationType.getName(mes.getCodecType());
             Serializer serializer = null;
             if(codecName.equals("kryo")) {
                 serializer = new KryoUtil();
@@ -40,13 +47,22 @@ public class MyEncoder extends MessageToByteEncoder<RpcMessage> {
                 serializer = new ProtostuffUtil();
             }
             bodyBytes = serializer.serialize(mes.getData());
-            int fullLength = MyProtocol.HEAD_LENGTH;
-            fullLength += bodyBytes.length;
-            buff.writeInt(fullLength);
+            int dataLength = bodyBytes.length;
+            buff.writeInt(dataLength);
             // if messageType is not heartbeat message,fullLength = head length + body length
             buff.writeBytes(bodyBytes);
+            log.info("Encoding complete...");
         } catch (Exception e) {
             log.error("Encode request error!", e);
         }
+    }
+
+    public static void main(String[] args) {
+        MyEncoder encoder = new MyEncoder();
+        MyDecoder decoder = new MyDecoder();
+        RpcMessage mes = RpcMessage.builder().data(RpcRequest.builder().group("fa").build())
+                .codecType(SerializationType.KRYO.getCode())
+                .messageType(MyProtocol.REQUEST)
+                .build();
     }
 }

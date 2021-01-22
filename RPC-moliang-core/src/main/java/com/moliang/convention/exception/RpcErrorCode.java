@@ -14,6 +14,9 @@ import lombok.ToString;
 @Getter
 @ToString
 public enum RpcErrorCode {
+
+    MES_PROTO_ERROR("消息协议类型错误"),
+    MES_SERIALIZE_ERROR("消息序列化类型无法识别"),
     CLIENT_CONNECT_SERVER_FAILURE("客户端连接服务端失败"),
     SERVICE_INVOCATION_FAILURE("服务调用失败"),
     SERVICE_CAN_NOT_BE_FOUND("没有找到指定的服务"),

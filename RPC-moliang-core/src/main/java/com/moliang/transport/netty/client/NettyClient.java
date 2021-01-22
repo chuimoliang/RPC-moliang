@@ -2,6 +2,8 @@ package com.moliang.transport.netty.client;
 
 import com.moliang.entity.RpcRequest;
 import com.moliang.transport.RequestTransport;
+import com.moliang.transport.codec.MyDecoder;
+import com.moliang.transport.codec.MyEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -43,8 +45,8 @@ public class NettyClient implements RequestTransport {
                         ChannelPipeline p = ch.pipeline();
                         // If no data is sent to the server within 15 seconds, a heartbeat request is sent
                         p.addLast(new IdleStateHandler(0, 5, 0, TimeUnit.SECONDS));
-                        //p.addLast(new RpcMessageEncoder());
-                        //p.addLast(new RpcMessageDecoder());
+                        p.addLast(new MyEncoder());
+                        p.addLast(new MyDecoder());
                         //p.addLast(new NettyRpcClientHandler());
                     }
                 });
