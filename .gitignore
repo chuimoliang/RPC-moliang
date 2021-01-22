@@ -1,0 +1,3 @@
+# Project exclude paths
+/RPC-moliang-core/target/
+/RPC-moliang-test/target/
