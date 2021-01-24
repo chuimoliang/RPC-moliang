@@ -11,6 +11,7 @@
     <modules>
         <module>RPC-moliang-core</module>
         <module>RPC-moliang-test</module>
+        <module>RPC-moliang-common</module>
     </modules>
 
     <properties>

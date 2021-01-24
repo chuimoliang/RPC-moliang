@@ -7,6 +7,7 @@ import com.moliang.convention.exception.RpcException;
 import com.moliang.entity.RpcMessage;
 import com.moliang.entity.RpcRequest;
 import com.moliang.entity.RpcResponse;
+import com.moliang.extension.ExtensionLoader;
 import com.moliang.serialize.KryoUtil;
 import com.moliang.serialize.ProtostuffUtil;
 import com.moliang.serialize.Serializer;
@@ -57,12 +58,8 @@ public class MyDecoder extends ReplayingDecoder<RpcMessage> {
             // deserialize the object
             String codecName = SerializationType.getName(mes.getCodecType());
             log.info("codec name: [{}] ", codecName);
-            Serializer serializer = null;
-            if(codecName.equals("kryo")) {
-                serializer = new KryoUtil();
-            } else if(codecName.equals("protostuff")) {
-                serializer = new ProtostuffUtil();
-            }
+            Serializer serializer = ExtensionLoader.getExtensionLoader(Serializer.class)
+                    .getExtension(codecName);
             if (messageType == MyProtocol.REQUEST) {
                 RpcRequest tmpValue = serializer.deserialize(bs, RpcRequest.class);
                 mes.setData(tmpValue);

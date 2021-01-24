@@ -4,6 +4,7 @@ import com.moliang.convention.MyProtocol;
 import com.moliang.convention.enums.SerializationType;
 import com.moliang.entity.RpcMessage;
 import com.moliang.entity.RpcRequest;
+import com.moliang.extension.ExtensionLoader;
 import com.moliang.serialize.KryoUtil;
 import com.moliang.serialize.ProtostuffUtil;
 import com.moliang.serialize.Serializer;
@@ -40,12 +41,8 @@ public class MyEncoder extends MessageToByteEncoder<RpcMessage> {
             buff.writeByte(mes.getCodecType());
             byte[] bodyBytes = null;
             String codecName = SerializationType.getName(mes.getCodecType());
-            Serializer serializer = null;
-            if(codecName.equals("kryo")) {
-                serializer = new KryoUtil();
-            } else if(codecName.equals("protostuff")) {
-                serializer = new ProtostuffUtil();
-            }
+            Serializer serializer = ExtensionLoader.getExtensionLoader(Serializer.class)
+                    .getExtension(codecName);
             bodyBytes = serializer.serialize(mes.getData());
             int dataLength = bodyBytes.length;
             buff.writeInt(dataLength);

@@ -1,0 +1,8 @@
+com.moliang.registry.ServiceDiscovery:
+  - zk : com.moliang.registry.zk.ZkServiceDiscovery
+  - nacos : com.moliang.registry.nacos.NacosServiceDiscovery
+com.moliang.serialize.Serializer:
+  - kryo : com.moliang.serialize.KryoUtil
+  - protostuff : com.moliang.serialize.ProtostuffUtil
+com.moliang.loadBalance.LoadBalance:
+  - rand : com.moliang.loadBalance.RandomLoadBalance

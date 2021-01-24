@@ -1,7 +1,7 @@
 package com.moliang.transport;
 
-import com.moliang.annotions.SPI;
 import com.moliang.entity.RpcRequest;
+import com.moliang.extension.SPI;
 
 /**
  * @Use
