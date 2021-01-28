@@ -23,8 +23,8 @@ public class RequestController {
     private final ServiceProvider serviceProvider;
 
     @Autowired
-    public RequestController(ServiceProvider autowiredProvider) {
-        this.serviceProvider = autowiredProvider;
+    public RequestController(ServiceProvider serviceProvider) {
+        this.serviceProvider = serviceProvider;
     }
 
     /**

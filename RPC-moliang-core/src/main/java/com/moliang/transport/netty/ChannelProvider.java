@@ -2,6 +2,7 @@ package com.moliang.transport.netty;
 
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 import java.util.*;
@@ -14,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Version 1.0
  */
 @Slf4j
+@Component
 public class ChannelProvider {
     private final Map<String, Channel> channelMap;
 

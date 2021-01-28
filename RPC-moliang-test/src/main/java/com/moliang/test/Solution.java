@@ -1,6 +1,8 @@
 package com.moliang.test;
 
+import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * @Use leetcode刷题所用临时文件
@@ -134,9 +136,20 @@ public class Solution {
         return Integer.reverse(n);
     }
 
-    public static void main(String[] args) {
-        int[][] test = new int[][]{{1,1},{2,1},{2,2},{1,4},{3,3}};
-        Solution s = new Solution();
-        System.out.println(s.maxPoints(test));
+    public void futureTest() throws ExecutionException, InterruptedException {
+        ExecutorService executors = Executors.newSingleThreadExecutor();
+        Future<String> future = executors.submit(()-> {
+            for(int i = 0;i < 100;i++) {
+                System.out.println(Thread.currentThread().getName() + i);
+            }
+            return Thread.currentThread().getName();
+        });
+        System.out.println(Thread.currentThread().getName() + " +++ " + future.get());
+    }
+
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        System.out.println(Integer.MAX_VALUE);
+        StringBuilder str = new StringBuilder();
+
     }
 }

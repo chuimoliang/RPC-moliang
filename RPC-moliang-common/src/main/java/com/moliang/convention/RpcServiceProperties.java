@@ -2,6 +2,9 @@ package com.moliang.convention;
 
 import lombok.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @Use
  * @Author Chui moliang
@@ -24,6 +27,7 @@ public class RpcServiceProperties {
     private String serviceName;
 
     public String toRpcServiceName() {
+        Map<Integer, Integer> map = new HashMap<>();
         return this.getServiceName() + this.getGroup() + this.getVersion();
     }
 }

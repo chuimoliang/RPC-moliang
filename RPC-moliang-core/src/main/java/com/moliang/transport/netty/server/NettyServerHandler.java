@@ -15,6 +15,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * @Use
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @Version 1.0
  */
 @Slf4j
+@Component
 public class NettyServerHandler extends SimpleChannelInboundHandler {
 
     private final RequestController rpcRequestHandler;
@@ -35,7 +37,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof RpcMessage) {
-            log.info("server receive msg: [{}] ", msg);
+            log.info("服务端收到消息: [{}] ", msg);
             byte messageType = ((RpcMessage) msg).getMessageType();
             RpcMessage rpcMessage = RpcMessage.builder()
                     .codecType(SerializationType.KRYO.getCode())
@@ -47,7 +49,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
                 RpcRequest rpcRequest = (RpcRequest) ((RpcMessage) msg).getData();
                 // Execute the target method (the method the client needs to execute) and return the method result
                 Object result = rpcRequestHandler.handle(rpcRequest);
-                log.info(String.format("server get result: %s", result.toString()));
+                log.info(String.format("服务器取得结果: %s", result.toString()));
                 rpcMessage.setMessageType(MyProtocol.RESPONSE);
                 if (ctx.channel().isActive() && ctx.channel().isWritable()) {
                     RpcResponse<Object> rpcResponse = RpcResponse.success(result, rpcRequest.getRequestId());
@@ -55,7 +57,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
                 } else {
                     RpcResponse<Object> rpcResponse = RpcResponse.fail(RpcResponseCode.FAIL);
                     rpcMessage.setData(rpcResponse);
-                    log.error("not writable now, message dropped");
+                    log.error("现在无法写入响应，消息已删除");
                 }
             }
             ctx.writeAndFlush(rpcMessage).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
@@ -67,7 +69,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
         if (evt instanceof IdleStateEvent) {
             IdleState state = ((IdleStateEvent) evt).state();
             if (state == IdleState.READER_IDLE) {
-                log.info("idle check happen, so close the connection");
+                log.info("发生空闲检查，因此关闭连接");
                 ctx.close();
             }
         } else {
@@ -77,7 +79,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error("server catch exception");
+        log.error("服务器捕获异常");
         cause.printStackTrace();
         ctx.close();
     }

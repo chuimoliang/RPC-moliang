@@ -12,6 +12,8 @@
         <module>RPC-moliang-core</module>
         <module>RPC-moliang-test</module>
         <module>RPC-moliang-common</module>
+        <module>RPC-moliang-client</module>
+        <module>RPC-moliang-server</module>
     </modules>
 
     <properties>
@@ -34,7 +36,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>2.0.0-alpha1</version>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>

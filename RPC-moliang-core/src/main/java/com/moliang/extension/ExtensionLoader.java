@@ -99,14 +99,13 @@ public class ExtensionLoader<T> {
     }
 
     private Map<String, Class<?>> getExtensionClasses() {
-        // get the loaded extension class from the cache
         Map<String, Class<?>> classes = cachedClasses.get();
         // double check
         if (classes == null) {
             synchronized (cachedClasses) {
                 classes = cachedClasses.get();
                 if (classes == null) {
-                    classes = new HashMap<>();
+                    classes = new HashMap<String, Class<?>>();
                     // load all extensions from our extensions directory
                     loadDirectory(classes);
                     cachedClasses.set(classes);
@@ -117,24 +116,17 @@ public class ExtensionLoader<T> {
     }
 
     private void loadDirectory(Map<String, Class<?>> extensionClasses) {
-        File file = new File(FILE_PATH);
+        File file = new File("D:\\idiot\\idea\\github\\RPC-moliang\\RPC-moliang-core\\src\\main\\resources\\extension.yml");
         try {
-            HashMap<String, ArrayList<String>> res = yaml.loadAs(new FileInputStream(file), HashMap.class);
+            HashMap<String, LinkedHashMap<String, String>> res = yaml.loadAs(new FileInputStream(file), HashMap.class);
             ClassLoader classLoader = ExtensionLoader.class.getClassLoader();
-            ArrayList<String> ans = res.get(type);
-            for (String str : ans) {
-                if (str.length() > 0) {
-                    try {
-                        final int ei = str.indexOf('=');
-                        String name = str.substring(0, ei).trim();
-                        String clazzName = str.substring(ei + 1).trim();
-                        if (name.length() > 0 && clazzName.length() > 0) {
-                            Class<?> clazz = classLoader.loadClass(clazzName);
-                            extensionClasses.put(name, clazz);
-                        }
-                    } catch (ClassNotFoundException e) {
-                        log.error(e.getMessage());
-                    }
+            LinkedHashMap<String, String> ans = res.get(type.getName());
+            for(Map.Entry<String, String> t : ans.entrySet()) {
+                try {
+                    Class<?> clazz = classLoader.loadClass(t.getValue());
+                    extensionClasses.put(t.getKey(), clazz);
+                } catch (ClassNotFoundException e) {
+                    log.error(e.getMessage());
                 }
             }
         } catch (IOException e) {

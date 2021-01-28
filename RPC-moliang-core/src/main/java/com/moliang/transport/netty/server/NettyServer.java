@@ -16,6 +16,8 @@ import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 import com.moliang.convention.RpcServiceProperties;
 
@@ -86,9 +88,9 @@ public class NettyServer {
             // 等待服务端监听端口关闭
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            log.error("occur exception when start server:", e);
+            log.error("启动服务器时发生异常:", e);
         } finally {
-            log.error("shutdown bossGroup and workerGroup");
+            log.error("关闭bossGroup和workerGroup");
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
             serviceHandlerGroup.shutdownGracefully();

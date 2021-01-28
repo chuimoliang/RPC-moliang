@@ -1,6 +1,6 @@
 package com.moliang.registry;
 
-import com.moliang.annotions.SPI;
+import com.moliang.extension.SPI;
 
 import java.net.InetSocketAddress;
 
