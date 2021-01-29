@@ -1,4 +1,4 @@
-package com.moliang.controller;
+package com.moliang.handler;
 
 import com.moliang.convention.exception.RpcException;
 import com.moliang.entity.RpcRequest;
@@ -18,12 +18,12 @@ import java.lang.reflect.Method;
  */
 @Component
 @Slf4j
-public class RequestController {
+public class RequestHandler {
 
     private final ServiceProvider serviceProvider;
 
     @Autowired
-    public RequestController(ServiceProvider serviceProvider) {
+    public RequestHandler(ServiceProvider serviceProvider) {
         this.serviceProvider = serviceProvider;
     }
 

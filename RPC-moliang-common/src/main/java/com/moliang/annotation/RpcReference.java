@@ -1,4 +1,4 @@
-package com.moliang.annotion;
+package com.moliang.annotation;
 
 import java.lang.annotation.*;
 
@@ -15,12 +15,12 @@ import java.lang.annotation.*;
 public @interface RpcReference {
 
     /**
-     * Service version, default value is empty string
+     * 服务版本，默认值为空字符串
      */
     String version() default "";
 
     /**
-     * Service group, default value is empty string
+     * 服务组，默认值为空字符串
      */
     String group() default "";
 

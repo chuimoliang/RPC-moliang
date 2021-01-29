@@ -1,6 +1,6 @@
 package com.moliang.transport.netty.server;
 
-import com.moliang.controller.RequestController;
+import com.moliang.handler.RequestHandler;
 import com.moliang.convention.MyProtocol;
 import com.moliang.convention.enums.RpcResponseCode;
 import com.moliang.convention.enums.SerializationType;
@@ -12,7 +12,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,10 +26,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class NettyServerHandler extends SimpleChannelInboundHandler {
 
-    private final RequestController rpcRequestHandler;
+    private final RequestHandler rpcRequestHandler;
 
     @Autowired
-    public NettyServerHandler(RequestController rpcRequestHandler) {
+    public NettyServerHandler(RequestHandler rpcRequestHandler) {
         this.rpcRequestHandler = rpcRequestHandler;
     }
 

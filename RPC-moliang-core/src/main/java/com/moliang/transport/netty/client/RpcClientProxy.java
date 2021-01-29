@@ -17,9 +17,9 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Dynamic proxy class.
- * When a dynamic proxy object calls a method, it actually calls the following invoke method.
- * It is precisely because of the dynamic proxy that the remote method called by the client is like calling the local method (the intermediate process is shielded)
+ * 动态代理类。
+ * 当动态代理对象调用方法时，它实际上会调用以下invoke方法。
+ * 正是由于动态代理，客户端调用的远程方法就像调用本地方法一样（中间过程被屏蔽）
  *
  * @author shuang.kou
  * @createTime 2020年05月10日 19:01:00
@@ -30,7 +30,7 @@ public class RpcClientProxy implements InvocationHandler {
     private static final String INTERFACE_NAME = "interfaceName";
 
     /**
-     * Used to send requests to the server.And there are two implementations: socket and netty
+     * 用于向服务器发送请求。有两种实现：socket和netty
      */
     private final RequestTransport rpcRequestTransport;
     private final RpcServiceProperties rpcServiceProperties;
@@ -53,7 +53,7 @@ public class RpcClientProxy implements InvocationHandler {
     }
 
     /**
-     * get the proxy object
+     * 获取代理对象
      */
     @SuppressWarnings("unchecked")
     public <T> T getProxy(Class<T> clazz) {
@@ -61,14 +61,14 @@ public class RpcClientProxy implements InvocationHandler {
     }
 
     /**
-     * This method is actually called when you use a proxy object to call a method.
-     * The proxy object is the object you get through the getProxy method.
+     * 当您使用代理对象调用方法时，实际上会调用此方法。
+     * 代理对象是您通过getProxy方法获得的对象。
      */
     @SneakyThrows
     @SuppressWarnings("unchecked")
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {
-        log.info("invoked method: [{}]", method.getName());
+        log.info("调用方法: [{}]", method.getName());
         RpcRequest rpcRequest = RpcRequest.builder().methodName(method.getName())
                 .parameters(args)
                 .interfaceName(method.getDeclaringClass().getName())
@@ -78,10 +78,8 @@ public class RpcClientProxy implements InvocationHandler {
                 .version(rpcServiceProperties.getVersion())
                 .build();
         RpcResponse<Object> rpcResponse = null;
-        if (rpcRequestTransport instanceof NettyClient) {
-            CompletableFuture<RpcResponse<Object>> completableFuture = (CompletableFuture<RpcResponse<Object>>) rpcRequestTransport.send(rpcRequest);
-            rpcResponse = completableFuture.get();
-        }
+        CompletableFuture<RpcResponse<Object>> completableFuture = (CompletableFuture<RpcResponse<Object>>) rpcRequestTransport.send(rpcRequest);
+        rpcResponse = completableFuture.get();
         this.check(rpcResponse, rpcRequest);
         return rpcResponse.getData();
     }

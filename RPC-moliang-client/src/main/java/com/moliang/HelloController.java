@@ -1,10 +1,6 @@
 package com.moliang;
 
-import com.moliang.annotion.RpcReference;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayDeque;
-import java.util.Map;
 
 /**
  * @author smile2coder
