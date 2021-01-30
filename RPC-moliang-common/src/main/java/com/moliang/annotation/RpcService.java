@@ -3,7 +3,7 @@ package com.moliang.annotation;
 import java.lang.annotation.*;
 
 /**
- * @Use
+ * @Use 服务提供者注册服务所用注解
  * @Author Chui moliang
  * @Date 2021/1/29 1:37
  * @Version 1.0

@@ -4,8 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Stack;
+
 /**
- * @Use
+ * @Use 响应码
  * @Author Chui moliang
  * @Date 2021/1/21 20:09
  * @Version 1.0
@@ -20,4 +25,5 @@ public enum RpcResponseCode {
 
     private final int code;
     private final String message;
+
 }

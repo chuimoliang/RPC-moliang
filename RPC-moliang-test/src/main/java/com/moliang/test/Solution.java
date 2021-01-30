@@ -147,9 +147,35 @@ public class Solution {
         System.out.println(Thread.currentThread().getName() + " +++ " + future.get());
     }
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        System.out.println(Integer.MAX_VALUE);
-        StringBuilder str = new StringBuilder();
+    class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode(int x) { val = x; }
+    }
 
+    public int[] levelOrder(TreeNode root) {
+        if(root == null) return new int[0];
+        int[] nums = new int[10]; int index = 0;
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(root);
+        while(!q.isEmpty()) {
+            int size = q.size();
+            for(int i = 0;i < size;i++) {
+                TreeNode node = q.poll();
+                if(nums.length <= index) {
+                    int length = index + index >> 1;
+                    nums = Arrays.copyOf(nums, length);
+                }
+                nums[index] = node.val;
+                index++;
+                if(node.left != null) q.add(node.left);
+                if(node.right != null) q.add(node.right);
+            }
+        }
+        return Arrays.copyOf(nums, index);
+    }
+
+    public static void main(String[] args) {
     }
 }
