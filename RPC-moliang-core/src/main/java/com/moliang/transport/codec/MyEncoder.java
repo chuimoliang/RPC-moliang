@@ -13,6 +13,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
+
 /**
  * @Use
  * @Author Chui moliang
@@ -34,7 +36,7 @@ public class MyEncoder extends MessageToByteEncoder<RpcMessage> {
             //写入魔数 5个字节
             buff.writeBytes(MyProtocol.MAGIC_NUMBER);
             //版本号 一个字节
-            buff.writeInt(MyProtocol.VERSION);
+            buff.writeByte(MyProtocol.VERSION);
             //消息类型 一个字节
             buff.writeByte(mes.getMessageType());
             //序列化类型 一个字节
@@ -48,7 +50,7 @@ public class MyEncoder extends MessageToByteEncoder<RpcMessage> {
             buff.writeInt(dataLength);
             // if messageType is not heartbeat message,fullLength = head length + body length
             buff.writeBytes(bodyBytes);
-            log.info("Encoding complete...");
+            log.info("编码完成...");
         } catch (Exception e) {
             log.error("Encode request error!", e);
         }

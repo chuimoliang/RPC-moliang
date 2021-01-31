@@ -11,6 +11,7 @@ import com.moliang.transport.RequestTransport;
 import com.moliang.transport.codec.MyDecoder;
 import com.moliang.transport.codec.MyEncoder;
 import com.moliang.transport.netty.ChannelProvider;
+import com.moliang.transport.netty.server.NettyServerHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoop;
@@ -21,6 +22,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -47,13 +49,11 @@ public class NettyClient implements RequestTransport {
     private final ChannelProvider channelProvider;
 
     @Autowired
-    private NettyClientHandler nettyClientHandler;
-
-    @Autowired
     public NettyClient(UnprocessedRequest unprocessedRequests, ChannelProvider channelProvider) {
         //默认开启线程数量是CPU核心数*2
         this.eventLoopGroup = new NioEventLoopGroup();
         this.bootstrap = new Bootstrap();
+        final NettyClient client = this;
         this.bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new LoggingHandler(LogLevel.INFO))
@@ -66,7 +66,7 @@ public class NettyClient implements RequestTransport {
                         p.addLast(new IdleStateHandler(0, 5, 0, TimeUnit.SECONDS));
                         p.addLast(new MyEncoder());
                         p.addLast(new MyDecoder());
-                        p.addLast(nettyClientHandler);
+                        p.addLast(new NettyClientHandler(client, unprocessedRequests));
                     }
                 });
         this.serviceDiscovery = ExtensionLoader.getExtensionLoader(ServiceDiscovery.class).getExtension("zk");
@@ -74,9 +74,11 @@ public class NettyClient implements RequestTransport {
         this.channelProvider = channelProvider;
     }
 
-    public Channel doConnect(InetSocketAddress inetSocketAddress) throws ExecutionException, InterruptedException {
+    @SneakyThrows
+    public Channel doConnect(InetSocketAddress inetSocketAddress) {
         CompletableFuture<Channel> completableFuture = new CompletableFuture<>();
         bootstrap.connect(inetSocketAddress).addListener((ChannelFutureListener) future -> {
+            log.info(future.toString());
             if (future.isSuccess()) {
                 log.info("客户端与 [{}] 连接成功!", inetSocketAddress.toString());
                 completableFuture.complete(future.channel());
@@ -92,13 +94,7 @@ public class NettyClient implements RequestTransport {
         CompletableFuture<RpcResponse<Object>> resultFuture = new CompletableFuture<>();
         String rpcServiceName = rpcRequest.toRpcProperties().toRpcServiceName();
         InetSocketAddress inetSocketAddress = serviceDiscovery.lookForService(rpcServiceName);
-        Channel channel = null;
-        try {
-            channel = getChannel(inetSocketAddress);
-        } catch (Exception e) {
-            log.error("客户端消息发送失败 [{}]" , e.getMessage());
-            return null;
-        }
+        Channel channel = getChannel(inetSocketAddress);
         if (channel.isActive()) {
             unprocessedRequests.put(rpcRequest.getRequestId(), resultFuture);
             RpcMessage rpcMessage = RpcMessage.builder()
@@ -117,11 +113,10 @@ public class NettyClient implements RequestTransport {
         } else {
             throw new IllegalStateException();
         }
-
         return resultFuture;
     }
 
-    public Channel getChannel(InetSocketAddress inetSocketAddress) throws ExecutionException, InterruptedException {
+    public Channel getChannel(InetSocketAddress inetSocketAddress) {
         Channel channel = channelProvider.get(inetSocketAddress);
         if (channel == null) {
             channel = doConnect(inetSocketAddress);

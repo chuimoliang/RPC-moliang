@@ -1,7 +1,6 @@
 package com.moliang;
 
 import com.moliang.extension.EnableRpc;
-import com.moliang.convention.RpcServiceProperties;
 import com.moliang.transport.netty.server.NettyServer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -15,6 +14,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class ServerMain {
     public static void main(String[] args) throws InterruptedException {
         // 通过注释注册服务
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(ServerMain.class);
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ServerMain.class);
+        NettyServer ns = (NettyServer) ctx.getBean("nettyServer");
+        ns.start();
     }
 }

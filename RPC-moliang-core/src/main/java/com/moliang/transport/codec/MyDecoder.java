@@ -28,14 +28,26 @@ import java.util.List;
 @Slf4j
 public class MyDecoder extends ReplayingDecoder<RpcMessage> {
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         /**
          * 协议
          *
          * 魔数 + 版本号 + 消息类型 + 序列化类型 + 数据长度
          */
-        checkMagicNumber(in);
-        checkVersion(in);
+        int len = MyProtocol.MAGIC_NUMBER.length;
+        byte[] tmp = new byte[len];
+        in.readBytes(tmp);
+        for (int i = 0; i < len; i++) {
+            if (tmp[i] != MyProtocol.MAGIC_NUMBER[i]) {
+                log.error("错误的魔数" + Arrays.toString(tmp));
+                throw new RpcException(RpcErrorCode.MES_PROTO_ERROR);
+            }
+        }
+        byte version = in.readByte();
+        if (version != MyProtocol.VERSION) {
+            log.error("无法识别的版本" + version);
+            throw new RpcException(RpcErrorCode.MES_PROTO_ERROR);
+        }
         byte messageType = in.readByte();
         byte codecType = in.readByte();
         RpcMessage mes = RpcMessage.builder()
@@ -69,18 +81,6 @@ public class MyDecoder extends ReplayingDecoder<RpcMessage> {
             }
         }
         out.add(mes);
-    }
-    private void checkMagicNumber(ByteBuf in) {
-        // read the first 4 bit, which is the magic number, and compare
-        int len = MyProtocol.MAGIC_NUMBER.length;
-        byte[] tmp = new byte[len];
-        in.readBytes(tmp);
-        for (int i = 0; i < len; i++) {
-            if (tmp[i] != MyProtocol.MAGIC_NUMBER[i]) {
-                log.error("错误的魔数" + Arrays.toString(tmp));
-                throw new RpcException(RpcErrorCode.MES_PROTO_ERROR);
-            }
-        }
     }
     private void checkVersion(ByteBuf in) {
         // read the version and compare

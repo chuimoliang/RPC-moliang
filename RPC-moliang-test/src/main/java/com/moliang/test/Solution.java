@@ -1,6 +1,5 @@
 package com.moliang.test;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -174,6 +173,106 @@ public class Solution {
             }
         }
         return Arrays.copyOf(nums, index);
+    }
+
+    public int countBalls(int lowLimit, int highLimit) {
+        int[] nums = new int[10];
+        int ans = 0;
+        for(int i = lowLimit;i <= highLimit;i++) {
+            int index = calculate(i);
+            while(nums.length <= index) {
+                nums = Arrays.copyOf(nums, nums.length << 1);
+            }
+            nums[index]++;
+            ans = Math.max(nums[index], ans);
+        }
+        return ans;
+    }
+
+    public int calculate(int x) {
+        int ans = 0;
+        while(x > 0) {
+            ans += x % 10;
+            x /= 10;
+        }
+        return ans;
+    }
+
+    public int[] restoreArray(int[][] adjacentPairs) {
+        int n = adjacentPairs.length + 1;
+        int[] ans = new int[n];
+        HashMap<Integer, List<Integer>> map = new HashMap<>();
+        for(int[] t : adjacentPairs) {
+            List<Integer> l1 = map.getOrDefault(t[0], new ArrayList<>());
+            l1.add(t[1]);
+            map.put(t[0], l1);
+            List<Integer> l2 = map.getOrDefault(t[1], new ArrayList<>());
+            l2.add(t[0]);
+            map.put(t[1], l2);
+        }
+        int index = 0;
+        for(Map.Entry<Integer, List<Integer>> t : map.entrySet()) {
+            if(t.getValue().size() == 1) index =t.getKey();
+        }
+        int i = 0;
+        while(i < n) {
+            ans[i] = index;
+            int next = map.get(index).get(0);
+            List<Integer> temp = map.get(next);
+            for(int z = 0;z < 2;z++) {
+                if (temp.get(z) == index) {
+                    temp.remove(z);
+                    break;
+                }
+            }
+            i++;
+        }
+        return ans;
+    }
+
+    public boolean[] canEat(int[] candiesCount, int[][] queries) {
+        boolean[] ans = new boolean[queries.length];
+        double[] tab1 = new double[candiesCount.length];
+        double[] tab2 = new double[candiesCount.length];
+        double temp = 0; int c = 0;
+        for(int e : candiesCount) {
+            temp += e;
+            tab2[c] = temp;
+            if(c < tab1.length - 1) tab1[c + 1] = temp;
+            c++;
+        }
+        c = 0;
+        for(int[] t : queries) {
+            ans[c] = tab1[t[0]] / (double) t[2] < (double) (t[1] + 1) && tab2[t[0]] > t[1];
+            c++;
+        }
+        return ans;
+    }
+    int[][] res;
+    char[] chars;
+    public boolean checkPartitioning(String s) {
+        int len = s.length();
+        res = new int[len][len];
+        chars = s.toCharArray();
+        List<Integer> ll = new ArrayList<>();
+        for(int i = 0;i < len;i++) {
+            res[i][i] = 2;
+        }
+        for(int i = 1;i < len - 2;i++) {
+            for(int l = 1;l + i < len;l++) {
+                if(isPartition(0, l -1) && isPartition(l, l + i - 1) && isPartition(l + i, len - 1))
+                    return true;
+            }
+        }
+        return false;
+    }
+    public boolean isPartition(int l, int r) {
+        if(res[l][r] > 0) return res[l][r] > 1;
+        boolean ans = chars[l] == chars[r] &&(l > r || isPartition(l + 1, r - 1));
+        if(ans)
+        res[l][r] = 2;
+        else res[l][r] = 1;
+        return ans;
     }
 
     public static void main(String[] args) {

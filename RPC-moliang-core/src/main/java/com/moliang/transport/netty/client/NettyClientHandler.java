@@ -25,12 +25,11 @@ import java.net.InetSocketAddress;
  * @Version 1.0
  */
 @Slf4j
-@Component
 public class NettyClientHandler extends SimpleChannelInboundHandler<RpcMessage> {
 
     private final NettyClient nettyClient;
     private final UnprocessedRequest unprocessedRequests;
-    @Autowired
+
     public NettyClientHandler(NettyClient nettyClient, UnprocessedRequest unprocessedRequests) {
         super();
         this.nettyClient = nettyClient;
