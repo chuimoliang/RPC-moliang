@@ -34,6 +34,7 @@ public class MyDecoder extends ReplayingDecoder<RpcMessage> {
          *
          * 魔数 + 版本号 + 消息类型 + 序列化类型 + 数据长度
          */
+        // 验证魔数
         int len = MyProtocol.MAGIC_NUMBER.length;
         byte[] tmp = new byte[len];
         in.readBytes(tmp);
@@ -43,27 +44,36 @@ public class MyDecoder extends ReplayingDecoder<RpcMessage> {
                 throw new RpcException(RpcErrorCode.MES_PROTO_ERROR);
             }
         }
+        // 验证版本号
         byte version = in.readByte();
         if (version != MyProtocol.VERSION) {
             log.error("无法识别的版本" + version);
             throw new RpcException(RpcErrorCode.MES_PROTO_ERROR);
         }
+        // 消息类型
         byte messageType = in.readByte();
+        // 序列化类型
         byte codecType = in.readByte();
         RpcMessage mes = RpcMessage.builder()
                             .messageType(messageType)
                             .codecType(codecType).build();
+        // 数据长度
+        int dataLength = in.readInt();
         if (messageType == MyProtocol.REQUEST_HEART) {
+            log.info("莫非心跳包数据长度不是0 ? " + dataLength);
+            byte[] bs = new byte[dataLength];
+            in.readBytes(bs);
             mes.setData(MyProtocol.PING);
             out.add(mes);
             return;
         }
         if (messageType == MyProtocol.RESPONSE_HEART) {
+            byte[] bs = new byte[dataLength];
+            in.readBytes(bs);
             mes.setData(MyProtocol.PONG);
             out.add(mes);
             return;
         }
-        int dataLength = in.readInt();
         if (dataLength > 0) {
             byte[] bs = new byte[dataLength];
             in.readBytes(bs);

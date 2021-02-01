@@ -6,6 +6,7 @@ import com.moliang.entity.RpcMessage;
 import com.moliang.entity.RpcRequest;
 import com.moliang.entity.RpcResponse;
 import com.moliang.extension.ExtensionLoader;
+import com.moliang.factory.SingletonFactory;
 import com.moliang.registry.ServiceDiscovery;
 import com.moliang.transport.RequestTransport;
 import com.moliang.transport.codec.MyDecoder;
@@ -39,7 +40,6 @@ import java.util.concurrent.TimeUnit;
  * @Version 1.0
  */
 @Slf4j
-@Component
 public class NettyClient implements RequestTransport {
     private final NioEventLoopGroup eventLoopGroup;
     private final Bootstrap bootstrap;
@@ -48,8 +48,7 @@ public class NettyClient implements RequestTransport {
     private final UnprocessedRequest unprocessedRequests;
     private final ChannelProvider channelProvider;
 
-    @Autowired
-    public NettyClient(UnprocessedRequest unprocessedRequests, ChannelProvider channelProvider) {
+    public NettyClient() {
         //默认开启线程数量是CPU核心数*2
         this.eventLoopGroup = new NioEventLoopGroup();
         this.bootstrap = new Bootstrap();
@@ -66,12 +65,12 @@ public class NettyClient implements RequestTransport {
                         p.addLast(new IdleStateHandler(0, 5, 0, TimeUnit.SECONDS));
                         p.addLast(new MyEncoder());
                         p.addLast(new MyDecoder());
-                        p.addLast(new NettyClientHandler(client, unprocessedRequests));
+                        p.addLast(new NettyClientHandler());
                     }
                 });
         this.serviceDiscovery = ExtensionLoader.getExtensionLoader(ServiceDiscovery.class).getExtension("zk");
-        this.unprocessedRequests = unprocessedRequests;
-        this.channelProvider = channelProvider;
+        this.unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequest.class);
+        this.channelProvider = SingletonFactory.getInstance(ChannelProvider.class);
     }
 
     @SneakyThrows

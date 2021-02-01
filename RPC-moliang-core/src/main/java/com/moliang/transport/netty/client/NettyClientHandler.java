@@ -5,6 +5,7 @@ import com.moliang.convention.enums.SerializationType;
 import com.moliang.entity.RpcMessage;
 import com.moliang.entity.RpcRequest;
 import com.moliang.entity.RpcResponse;
+import com.moliang.factory.SingletonFactory;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -30,10 +31,10 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcMessage> 
     private final NettyClient nettyClient;
     private final UnprocessedRequest unprocessedRequests;
 
-    public NettyClientHandler(NettyClient nettyClient, UnprocessedRequest unprocessedRequests) {
+    public NettyClientHandler() {
         super();
-        this.nettyClient = nettyClient;
-        this.unprocessedRequests = unprocessedRequests;
+        this.nettyClient = SingletonFactory.getInstance(NettyClient.class);
+        this.unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequest.class);
     }
 
     /**
@@ -45,13 +46,17 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcMessage> 
      */
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcMessage msg) throws Exception {
-        log.info("client receive msg: [{}]", msg);
-        byte messageType = msg.getMessageType();
-        if (messageType == MyProtocol.RESPONSE_HEART) {
-            log.info("heart [{}]", msg.getData());
-        } else if (messageType == MyProtocol.RESPONSE) {
-            RpcResponse<Object> rpcResponse = (RpcResponse<Object>) msg.getData();
-            unprocessedRequests.complete(rpcResponse);
+        try {
+            log.info("客户端收到消息: [{}]", msg);
+            byte messageType = msg.getMessageType();
+            if (messageType == MyProtocol.RESPONSE_HEART) {
+                log.info("心跳 [{}]", msg.getData());
+            } else if (messageType == MyProtocol.RESPONSE) {
+                RpcResponse<Object> rpcResponse = (RpcResponse<Object>) msg.getData();
+                unprocessedRequests.complete(rpcResponse);
+            }
+        } finally {
+            ReferenceCountUtil.release(msg);
         }
     }
 

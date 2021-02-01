@@ -15,11 +15,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Version 1.0
  */
 @Slf4j
-@Component
 public class ChannelProvider {
     private final Map<String, Channel> channelMap;
 
-    public ChannelProvider(Map<String, Channel> map) {
+    public ChannelProvider() {
         this.channelMap = new ConcurrentHashMap<>();
     }
 

@@ -1,8 +1,10 @@
-package com.moliang.handler;
+package com.moliang.transport.netty.server;
 
 import com.moliang.convention.exception.RpcException;
 import com.moliang.entity.RpcRequest;
+import com.moliang.factory.SingletonFactory;
 import com.moliang.provider.ServiceProvider;
+import com.moliang.provider.ServiceProviderImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,15 +18,13 @@ import java.lang.reflect.Method;
  * @Date 2021/1/24 3:07
  * @Version 1.0
  */
-@Component
 @Slf4j
 public class RequestHandler {
 
     private final ServiceProvider serviceProvider;
 
-    @Autowired
-    public RequestHandler(ServiceProvider serviceProvider) {
-        this.serviceProvider = serviceProvider;
+    public RequestHandler() {
+        this.serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
     }
 
     /**

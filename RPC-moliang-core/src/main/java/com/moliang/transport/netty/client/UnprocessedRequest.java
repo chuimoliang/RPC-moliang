@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Date 2021/1/24 2:25
  * @Version 1.0
  */
-@Component
 public class UnprocessedRequest {
     private static final Map<String, CompletableFuture<RpcResponse<Object>>>
                                         UNPROCESSED_RESPONSE_FUTURES = new ConcurrentHashMap<>();

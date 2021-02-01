@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Version 1.0
  */
 @Slf4j
-@Component
 public class ServiceProviderImpl implements ServiceProvider {
 
     private final Map<String, Object> serviceMap;

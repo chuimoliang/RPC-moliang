@@ -9,3 +9,5 @@ com.moliang.serialize.Serializer:
   protostuff: com.moliang.serialize.ProtostuffUtil
 com.moliang.loadBalance.LoadBalance:
   rand: com.moliang.loadBalance.RandomLoadBalance
+com.moliang.transport.RequestTransport:
+  netty: com.moliang.transport.netty.client.NettyClient

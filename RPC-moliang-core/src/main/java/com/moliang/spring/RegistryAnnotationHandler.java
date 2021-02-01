@@ -1,8 +1,10 @@
-package com.moliang.handler;
+package com.moliang.spring;
 
 import com.moliang.annotation.RpcService;
 import com.moliang.convention.RpcServiceProperties;
+import com.moliang.factory.SingletonFactory;
 import com.moliang.provider.ServiceProvider;
+import com.moliang.provider.ServiceProviderImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +23,8 @@ public class RegistryAnnotationHandler implements BeanPostProcessor {
 
     private final ServiceProvider serviceProvider;
 
-    @Autowired
-    public RegistryAnnotationHandler(ServiceProvider serviceProvider) {
-        this.serviceProvider = serviceProvider;
+    public RegistryAnnotationHandler() {
+        this.serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
     }
 
     @Override

@@ -1,9 +1,13 @@
-package com.moliang.handler;
+package com.moliang.spring;
 
 import com.moliang.annotation.RpcReference;
 import com.moliang.convention.RpcServiceProperties;
+import com.moliang.extension.ExtensionLoader;
+import com.moliang.factory.SingletonFactory;
 import com.moliang.transport.RequestTransport;
+import com.moliang.transport.netty.client.NettyClient;
 import com.moliang.transport.netty.client.RpcClientProxy;
+import com.moliang.transport.netty.server.RequestHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +27,8 @@ import java.lang.reflect.Field;
 public class ReferenceAnnotationHandler implements BeanPostProcessor {
     private final RequestTransport rpcClient;
 
-    @Autowired
-    public ReferenceAnnotationHandler(RequestTransport rpcClient) {
-        this.rpcClient = rpcClient;
+    public ReferenceAnnotationHandler() {
+        this.rpcClient = ExtensionLoader.getExtensionLoader(RequestTransport.class).getExtension("netty");
     }
 
     @Override

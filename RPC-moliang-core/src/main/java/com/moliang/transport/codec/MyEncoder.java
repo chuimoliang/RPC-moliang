@@ -47,8 +47,9 @@ public class MyEncoder extends MessageToByteEncoder<RpcMessage> {
                     .getExtension(codecName);
             bodyBytes = serializer.serialize(mes.getData());
             int dataLength = bodyBytes.length;
+            // 数据长度
             buff.writeInt(dataLength);
-            // if messageType is not heartbeat message,fullLength = head length + body length
+            // 数据
             buff.writeBytes(bodyBytes);
             log.info("编码完成...");
         } catch (Exception e) {

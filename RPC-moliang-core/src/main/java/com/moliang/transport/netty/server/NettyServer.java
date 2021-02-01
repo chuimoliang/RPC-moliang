@@ -1,9 +1,12 @@
 package com.moliang.transport.netty.server;
 
+import com.moliang.factory.SingletonFactory;
 import com.moliang.provider.ServiceProvider;
+import com.moliang.provider.ServiceProviderImpl;
 import com.moliang.registry.util.ThreadPoolFactoryUtils;
 import com.moliang.transport.codec.MyDecoder;
 import com.moliang.transport.codec.MyEncoder;
+import com.moliang.transport.netty.client.NettyClientHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -37,12 +40,8 @@ public class NettyServer {
 
     private final ServiceProvider serviceProvider;
 
-    @Autowired
-    NettyServerHandler nettyServerHandler;
-
-    @Autowired
-    public NettyServer(ServiceProvider serviceProvider) {
-        this.serviceProvider = serviceProvider;
+    public NettyServer() {
+        this.serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
     }
 
     public void registerService(Object service, RpcServiceProperties rpcServiceProperties) {
@@ -79,7 +78,7 @@ public class NettyServer {
                             p.addLast(new IdleStateHandler(30, 0, 0, TimeUnit.SECONDS));
                             p.addLast(new MyEncoder());
                             p.addLast(new MyDecoder());
-                            p.addLast(serviceHandlerGroup, nettyServerHandler);
+                            p.addLast(serviceHandlerGroup, new NettyServerHandler());
                         }
                     });
 
