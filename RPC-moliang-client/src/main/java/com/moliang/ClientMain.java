@@ -12,7 +12,10 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 @EnableRpc(packages = "com.moliang")
 public class ClientMain {
     public static void main(String[] args) throws InterruptedException {
+        long start = System.currentTimeMillis();
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(ClientMain.class);
+        long end = System.currentTimeMillis();
+        System.out.println((end - start) / 1000);
         HelloController helloController = (HelloController) applicationContext.getBean("helloController");
         helloController.test();
     }

@@ -46,17 +46,13 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcMessage> 
      */
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcMessage msg) throws Exception {
-        try {
-            log.info("客户端收到消息: [{}]", msg);
-            byte messageType = msg.getMessageType();
-            if (messageType == MyProtocol.RESPONSE_HEART) {
-                log.info("心跳 [{}]", msg.getData());
-            } else if (messageType == MyProtocol.RESPONSE) {
-                RpcResponse<Object> rpcResponse = (RpcResponse<Object>) msg.getData();
-                unprocessedRequests.complete(rpcResponse);
-            }
-        } finally {
-            ReferenceCountUtil.release(msg);
+        log.info("客户端收到消息: [{}]", msg);
+        byte messageType = msg.getMessageType();
+        if (messageType == MyProtocol.RESPONSE_HEART) {
+            log.info("心跳 [{}]", msg.getData());
+        } else if (messageType == MyProtocol.RESPONSE) {
+            RpcResponse<Object> rpcResponse = (RpcResponse<Object>) msg.getData();
+            unprocessedRequests.complete(rpcResponse);
         }
     }
 

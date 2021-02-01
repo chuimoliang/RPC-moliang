@@ -1,6 +1,8 @@
 package com.moliang;
 
 import com.moliang.annotation.RpcReference;
+import com.moliang.api.Hello;
+import com.moliang.api.HelloService;
 import org.springframework.stereotype.Component;
 
 /**

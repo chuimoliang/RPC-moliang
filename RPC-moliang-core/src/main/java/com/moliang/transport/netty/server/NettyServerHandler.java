@@ -34,35 +34,31 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-        try {
-            if (msg instanceof RpcMessage) {
-                log.info("服务端收到消息: [{}] ", msg);
-                byte messageType = ((RpcMessage) msg).getMessageType();
-                RpcMessage rpcMessage = RpcMessage.builder()
-                        .codecType(SerializationType.KRYO.getCode())
-                        .build();
-                if (messageType == MyProtocol.REQUEST_HEART) {
-                    rpcMessage.setMessageType(MyProtocol.RESPONSE_HEART);
-                    rpcMessage.setData(MyProtocol.PONG);
+        if (msg instanceof RpcMessage) {
+            log.info("服务端收到消息: [{}] ", msg);
+            byte messageType = ((RpcMessage) msg).getMessageType();
+            RpcMessage rpcMessage = RpcMessage.builder()
+                    .codecType(SerializationType.KRYO.getCode())
+                    .build();
+            if (messageType == MyProtocol.REQUEST_HEART) {
+                rpcMessage.setMessageType(MyProtocol.RESPONSE_HEART);
+                rpcMessage.setData(MyProtocol.PONG);
+            } else {
+                RpcRequest rpcRequest = (RpcRequest) ((RpcMessage) msg).getData();
+                // Execute the target method (the method the client needs to execute) and return the method result
+                Object result = rpcRequestHandler.handle(rpcRequest);
+                log.info(String.format("服务器取得结果: %s", result.toString()));
+                rpcMessage.setMessageType(MyProtocol.RESPONSE);
+                if (ctx.channel().isActive() && ctx.channel().isWritable()) {
+                    RpcResponse<Object> rpcResponse = RpcResponse.success(result, rpcRequest.getRequestId());
+                    rpcMessage.setData(rpcResponse);
                 } else {
-                    RpcRequest rpcRequest = (RpcRequest) ((RpcMessage) msg).getData();
-                    // Execute the target method (the method the client needs to execute) and return the method result
-                    Object result = rpcRequestHandler.handle(rpcRequest);
-                    log.info(String.format("服务器取得结果: %s", result.toString()));
-                    rpcMessage.setMessageType(MyProtocol.RESPONSE);
-                    if (ctx.channel().isActive() && ctx.channel().isWritable()) {
-                        RpcResponse<Object> rpcResponse = RpcResponse.success(result, rpcRequest.getRequestId());
-                        rpcMessage.setData(rpcResponse);
-                    } else {
-                        RpcResponse<Object> rpcResponse = RpcResponse.fail(RpcResponseCode.FAIL);
-                        rpcMessage.setData(rpcResponse);
-                        log.error("现在无法写入响应，消息已删除");
-                    }
+                    RpcResponse<Object> rpcResponse = RpcResponse.fail(RpcResponseCode.FAIL);
+                    rpcMessage.setData(rpcResponse);
+                    log.error("现在无法写入响应，消息已删除");
                 }
-                ctx.writeAndFlush(rpcMessage).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
             }
-        } finally {
-            ReferenceCountUtil.release(msg);
+            ctx.writeAndFlush(rpcMessage).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
         }
     }
 

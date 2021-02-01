@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="RPC-moliang-client" />
+        <module name="RPC-moliang-api" />
         <module name="RPC-moliang-core" />
         <module name="RPC-moliang-common" />
         <module name="RPC-moliang-server" />

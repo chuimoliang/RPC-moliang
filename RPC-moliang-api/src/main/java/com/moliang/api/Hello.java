@@ -1,4 +1,4 @@
-package com.moliang;
+package com.moliang.api;
 
 import lombok.*;
 

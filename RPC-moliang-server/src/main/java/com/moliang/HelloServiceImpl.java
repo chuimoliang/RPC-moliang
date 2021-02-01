@@ -1,6 +1,8 @@
 package com.moliang;
 
 import com.moliang.annotation.RpcService;
+import com.moliang.api.Hello;
+import com.moliang.api.HelloService;
 import lombok.extern.slf4j.Slf4j;
 
 /**

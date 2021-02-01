@@ -14,6 +14,7 @@
         <module>RPC-moliang-common</module>
         <module>RPC-moliang-client</module>
         <module>RPC-moliang-server</module>
+        <module>RPC-moliang-api</module>
     </modules>
 
     <properties>
