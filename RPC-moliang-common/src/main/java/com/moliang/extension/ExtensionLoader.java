@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class ExtensionLoader<T> {
     private static final Yaml yaml = new Yaml();
-    private static final String FILE_PATH = "extension.yml";
+    private static final String FILE_PATH = "META-INF/extension/extension.yml";
     private static final Map<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<>();
     private static final Map<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<>();
 
@@ -116,10 +117,11 @@ public class ExtensionLoader<T> {
     }
 
     private void loadDirectory(Map<String, Class<?>> extensionClasses) {
-        File file = new File("D:\\idiot\\idea\\github\\RPC-moliang\\RPC-moliang-core\\src\\main\\resources\\extension.yml");
+        String fileName = "META-INF/services/extension.yml";
         try {
-            HashMap<String, LinkedHashMap<String, String>> res = yaml.loadAs(new FileInputStream(file), HashMap.class);
             ClassLoader classLoader = ExtensionLoader.class.getClassLoader();
+            URL url = classLoader.getResource(fileName);
+            HashMap<String, LinkedHashMap<String, String>> res = yaml.loadAs(new FileInputStream(url.getFile()), HashMap.class);
             LinkedHashMap<String, String> ans = res.get(type.getName());
             for(Map.Entry<String, String> t : ans.entrySet()) {
                 try {
