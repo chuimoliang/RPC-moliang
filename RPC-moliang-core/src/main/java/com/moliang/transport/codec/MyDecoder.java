@@ -60,7 +60,6 @@ public class MyDecoder extends ReplayingDecoder<RpcMessage> {
         // 数据长度
         int dataLength = in.readInt();
         if (messageType == MyProtocol.REQUEST_HEART) {
-            log.info("莫非心跳包数据长度不是0 ? " + dataLength);
             byte[] bs = new byte[dataLength];
             in.readBytes(bs);
             mes.setData(MyProtocol.PING);
@@ -79,7 +78,7 @@ public class MyDecoder extends ReplayingDecoder<RpcMessage> {
             in.readBytes(bs);
             // deserialize the object
             String codecName = SerializationType.getName(mes.getCodecType());
-            log.info("codec name: [{}] ", codecName);
+            log.info("编解码器: [{}] ", codecName);
             Serializer serializer = ExtensionLoader.getExtensionLoader(Serializer.class)
                     .getExtension(codecName);
             if (messageType == MyProtocol.REQUEST) {

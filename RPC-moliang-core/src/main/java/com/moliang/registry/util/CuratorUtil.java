@@ -1,6 +1,8 @@
 package com.moliang.registry.util;
 
 import com.moliang.convention.enums.RpcConfigEnum;
+import com.moliang.util.PropertiesFileUtil;
+import com.moliang.util.YamlFileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -58,7 +60,7 @@ public class CuratorUtil {
     }
 
     /**
-     * Gets the children under a node
+     * 在子节点下获取子节点
      *
      * @param rpcServiceName rpc service name eg:github.javaguide.HelloServicetest2version1
      * @return All child nodes under the specified node
@@ -74,13 +76,13 @@ public class CuratorUtil {
             SERVICE_ADDRESS_MAP.put(rpcServiceName, result);
             registerWatcher(rpcServiceName, zkClient);
         } catch (Exception e) {
-            log.error("get children nodes for path [{}] fail", servicePath);
+            log.error("获取子节点的路径 [{}] 失败", servicePath);
         }
         return result;
     }
 
     /**
-     * Empty the registry of data
+     * 清空数据注册表
      */
     public static void clearRegistry(CuratorFramework zkClient, InetSocketAddress inetSocketAddress) {
         REGISTERED_PATH_SET.stream().parallel().forEach(p -> {
@@ -89,16 +91,19 @@ public class CuratorUtil {
                     zkClient.delete().forPath(p);
                 }
             } catch (Exception e) {
-                log.error("clear registry for path [{}] fail", p);
+                log.error("清除注册的路径 [{}] 失败", p);
             }
         });
-        log.info("All registered services on the server are cleared:[{}]", REGISTERED_PATH_SET.toString());
+        log.info("清除服务器上所有注册的服务:[{}]", REGISTERED_PATH_SET.toString());
     }
 
     public static CuratorFramework getZkClient() {
         // check if user has set zk address
         Properties properties = PropertiesFileUtil.readPropertiesFile(RpcConfigEnum.RPC_CONFIG_PATH.getPropertyValue());
         String zookeeperAddress = properties != null && properties.getProperty(RpcConfigEnum.ZK_ADDRESS.getPropertyValue()) != null ? properties.getProperty(RpcConfigEnum.ZK_ADDRESS.getPropertyValue()) : DEFAULT_ZOOKEEPER_ADDRESS;
+        if(zookeeperAddress == null) {
+            zookeeperAddress = YamlFileUtil.readPropertiesFile(RpcConfigEnum.ZK_ADDRESS.getPropertyValue());
+        }
         // if zkClient has been started, return directly
         if (zkClient != null && zkClient.getState() == CuratorFrameworkState.STARTED) {
             return zkClient;
@@ -115,7 +120,7 @@ public class CuratorUtil {
     }
 
     /**
-     * Registers to listen for changes to the specified node
+     * 注册以侦听对指定节点的更改
      *
      * @param rpcServiceName rpc service name eg:github.javaguide.HelloServicetest2version
      */

@@ -38,14 +38,14 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             log.info("服务端收到消息: [{}] ", msg);
             byte messageType = ((RpcMessage) msg).getMessageType();
             RpcMessage rpcMessage = RpcMessage.builder()
-                    .codecType(SerializationType.KRYO.getCode())
+                    .codecType(SerializationType.PROTOSTUFF.getCode())
                     .build();
             if (messageType == MyProtocol.REQUEST_HEART) {
                 rpcMessage.setMessageType(MyProtocol.RESPONSE_HEART);
                 rpcMessage.setData(MyProtocol.PONG);
             } else {
                 RpcRequest rpcRequest = (RpcRequest) ((RpcMessage) msg).getData();
-                // Execute the target method (the method the client needs to execute) and return the method result
+                // 执行目标方法（客户端需要执行的方法）并返回方法结果
                 Object result = rpcRequestHandler.handle(rpcRequest);
                 log.info(String.format("服务器取得结果: %s", result.toString()));
                 rpcMessage.setMessageType(MyProtocol.RESPONSE);

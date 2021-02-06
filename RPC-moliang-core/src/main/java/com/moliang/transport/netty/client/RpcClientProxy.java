@@ -28,10 +28,6 @@ import java.util.concurrent.CompletableFuture;
 public class RpcClientProxy implements InvocationHandler {
 
     private static final String INTERFACE_NAME = "interfaceName";
-
-    /**
-     * 用于向服务器发送请求。有两种实现：socket和netty
-     */
     private final RequestTransport rpcRequestTransport;
     private final RpcServiceProperties rpcServiceProperties;
 

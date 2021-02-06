@@ -1,6 +1,6 @@
 package com.moliang;
 
-import com.moliang.extension.EnableRpc;
+import com.moliang.annotation.EnableRpc;
 import com.moliang.transport.netty.server.NettyServer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 

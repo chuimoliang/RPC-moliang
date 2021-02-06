@@ -1,5 +1,6 @@
-package com.moliang.extension;
+package com.moliang.annotation;
 
+import com.moliang.extension.BeanScannerRegistry;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

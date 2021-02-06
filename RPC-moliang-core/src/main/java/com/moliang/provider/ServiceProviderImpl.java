@@ -43,7 +43,7 @@ public class ServiceProviderImpl implements ServiceProvider {
         }
         registeredService.add(rpcServiceName);
         serviceMap.put(rpcServiceName, service);
-        log.info("Add service: {} and interfaces:{}", rpcServiceName, service.getClass().getInterfaces());
+        log.info("添加服务: {} 和接口:{}", rpcServiceName, service.getClass().getInterfaces());
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ServiceProviderImpl implements ServiceProvider {
             this.addService(service, serviceRelatedInterface, rpcServiceProperties);
             serviceRegistry.registryService(rpcServiceProperties.toRpcServiceName(), new InetSocketAddress(host, NettyServer.PORT));
         } catch (UnknownHostException e) {
-            log.error("occur exception when getHostAddress", e);
+            log.error("getHostAddress时发生异常", e);
         }
     }
 

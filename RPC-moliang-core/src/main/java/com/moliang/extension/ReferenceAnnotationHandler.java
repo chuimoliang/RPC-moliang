@@ -1,4 +1,4 @@
-package com.moliang.spring;
+package com.moliang.extension;
 
 import com.moliang.annotation.RpcReference;
 import com.moliang.convention.RpcServiceProperties;

@@ -1,5 +1,6 @@
 package com.moliang.extension;
 
+import com.moliang.annotation.EnableRpc;
 import com.moliang.annotation.RpcService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -32,7 +33,7 @@ public class BeanScannerRegistry implements ImportBeanDefinitionRegistrar, Resou
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry beanDefinitionRegistry) {
-        //获取RpcScan批注的属性和值
+        //获取注解
         AnnotationAttributes rpcScanAnnotationAttributes = AnnotationAttributes.fromMap(annotationMetadata.getAnnotationAttributes(EnableRpc.class.getName()));
         String[] rpcScanBasePackages = new String[0];
         if (rpcScanAnnotationAttributes != null) {

@@ -28,7 +28,7 @@ public class RequestHandler {
     }
 
     /**
-     * Processing rpcRequest: call the corresponding method, and then return the method
+     * 处理rpcRequest：调用相应的方法，然后返回该方法
      */
     public Object handle(RpcRequest rpcRequest) {
         Object service = serviceProvider.getService(rpcRequest.toRpcProperties());
@@ -47,7 +47,7 @@ public class RequestHandler {
         try {
             Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
             result = method.invoke(service, rpcRequest.getParameters());
-            log.info("service:[{}] successful invoke method:[{}]", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());
+            log.info("服务:[{}] 成功调用方法:[{}]", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());
         } catch (NoSuchMethodException | IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
             throw new RpcException(e.getMessage(), e);
         }

@@ -1,5 +1,6 @@
-package com.moliang.registry.util;
+package com.moliang.util;
 
+import com.moliang.convention.enums.RpcConfigEnum;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileInputStream;
@@ -10,11 +11,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
- * @author shuang.kou
- * @createTime 2020年07月21日 14:25:00
- **/
+ * @Use properties类型文件读取工具
+ * @Author Chui moliang
+ * @Date 2021/2/4 16:54
+ * @Version 1.0
+ */
 @Slf4j
-public final class PropertiesFileUtil {
+public class PropertiesFileUtil {
+
     private PropertiesFileUtil() {
     }
 
@@ -30,7 +34,7 @@ public final class PropertiesFileUtil {
             properties = new Properties();
             properties.load(inputStreamReader);
         } catch (IOException e) {
-            log.error("occur exception when read properties file [{}]", fileName);
+            log.error("读取属性文件时发生异常 [{}]", fileName);
         }
         return properties;
     }

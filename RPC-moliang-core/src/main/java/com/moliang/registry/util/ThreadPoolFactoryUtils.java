@@ -50,11 +50,11 @@ public final class ThreadPoolFactoryUtils {
      * shutDown 所有线程池
      */
     public static void shutDownAllThreadPool() {
-        log.info("call shutDownAllThreadPool method");
+        log.info("调用shutDownAllThreadPool方法");
         THREAD_POOLS.entrySet().parallelStream().forEach(entry -> {
             ExecutorService executorService = entry.getValue();
             executorService.shutdown();
-            log.info("shut down thread pool [{}] [{}]", entry.getKey(), executorService.isTerminated());
+            log.info("关闭线程池 [{}] [{}]", entry.getKey(), executorService.isTerminated());
             try {
                 executorService.awaitTermination(10, TimeUnit.SECONDS);
             } catch (InterruptedException e) {

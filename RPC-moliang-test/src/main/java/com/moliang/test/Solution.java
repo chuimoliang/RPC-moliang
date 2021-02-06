@@ -275,8 +275,11 @@ public class Solution {
         return ans;
     }
 
+
+
     public static void main(String[] args) {
         String str = new String();
-
+        PriorityQueue q = new PriorityQueue();
+        System.out.println(q.remove(9));
     }
 }

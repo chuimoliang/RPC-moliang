@@ -9,15 +9,30 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @Use 加载类
+ * @Use 扩展加载类
  * @Author Chui moliang
  * @Date 2021/1/23 22:25
  * @Version 1.0
  */
 @Slf4j
 public class ExtensionLoader<T> {
+
+    /**
+     * 代码参考了dubbo中加载扩展的方式
+     * 与标准的 SPI 的区别在于
+     * (dubbo)文档原话 :
+     *  1. JDK 标准的 SPI 会一次性实例化扩展点所有实现，如果有扩展实现初始化很耗时，但如果没用上也加载，会很浪费资源。
+     *  2. 如果扩展点加载失败，连扩展点的名称都拿不到了。比如：JDK 标准的 ScriptEngine，
+     *      通过 getName() 获取脚本类型的名称，但如果 RubyScriptEngine 因为所依赖的 jruby.jar 不存在，
+     *      导致 RubyScriptEngine 类加载失败，这个失败原因被吃掉了，和 ruby 对应不起来，
+     *      当用户执行 ruby 脚本时，会报不支持 ruby，而不是真正失败的原因。
+     *  3. 增加了对扩展点 IoC 和 AOP 的支持，一个扩展点可以直接 setter 注入其它扩展点
+     *
+     *  我这里并没有实现 对扩展点 IoC 和 AOP 的支持
+     */
+
     private static final Yaml yaml = new Yaml();
-    private static final String FILE_PATH = "META-INF/extension/extension.yml";
+    private static final String FILE_PATH = "META-INF/services/extension.yml";
     private static final Map<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<>();
     private static final Map<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<>();
 
@@ -101,13 +116,11 @@ public class ExtensionLoader<T> {
 
     private Map<String, Class<?>> getExtensionClasses() {
         Map<String, Class<?>> classes = cachedClasses.get();
-        // double check
         if (classes == null) {
             synchronized (cachedClasses) {
                 classes = cachedClasses.get();
                 if (classes == null) {
                     classes = new HashMap<String, Class<?>>();
-                    // load all extensions from our extensions directory
                     loadDirectory(classes);
                     cachedClasses.set(classes);
                 }
@@ -117,10 +130,9 @@ public class ExtensionLoader<T> {
     }
 
     private void loadDirectory(Map<String, Class<?>> extensionClasses) {
-        String fileName = "META-INF/services/extension.yml";
         try {
             ClassLoader classLoader = ExtensionLoader.class.getClassLoader();
-            URL url = classLoader.getResource(fileName);
+            URL url = classLoader.getResource(FILE_PATH);
             HashMap<String, LinkedHashMap<String, String>> res = yaml.loadAs(new FileInputStream(url.getFile()), HashMap.class);
             LinkedHashMap<String, String> ans = res.get(type.getName());
             for(Map.Entry<String, String> t : ans.entrySet()) {
@@ -149,6 +161,7 @@ public class ExtensionLoader<T> {
         }
     }
 
+    /**
     public static void main(String[] args) throws FileNotFoundException {
         File file = new File("D:\\idiot\\idea\\github\\RPC-moliang\\RPC-moliang-core\\src\\main\\resources\\extension.yml");
         ConcurrentHashMap<String, ArrayList<String>> result = yaml.loadAs(new FileInputStream(file), ConcurrentHashMap.class);
@@ -156,4 +169,5 @@ public class ExtensionLoader<T> {
             System.out.println(e+":\t"+ result.get(e).toString());
         }
     }
+     **/
 }
