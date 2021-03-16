@@ -53,7 +53,7 @@ public class MyEncoder extends MessageToByteEncoder<RpcMessage> {
             buff.writeBytes(bodyBytes);
             log.info("编码完成...");
         } catch (Exception e) {
-            log.error("Encode request error!", e);
+            log.error("编码请求错误!", e);
         }
     }
 

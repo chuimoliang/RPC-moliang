@@ -6,22 +6,24 @@ import com.moliang.api.HelloService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author shuang.kou
- * @createTime 2020年05月10日 07:52:00
+ * @Use
+ * @Author Chui moliang
+ * @Date 2021/3/16 16:33
+ * @Version 1.0
  */
 @Slf4j
-@RpcService(version = "1.0", group = "h1")
-public class HelloServiceImpl implements HelloService {
+@RpcService(version = "1.1", group = "h1")
+public class HelloServiceImpl1 implements HelloService {
 
     static {
-        System.out.println("HelloServiceImpl被创建");
+        System.out.println("HelloServiceImpl1被创建");
     }
 
     @Override
     public String hello(Hello hello) {
-        log.info("HelloServiceImpl收到: {}.", hello.getMessage());
+        log.info("HelloServiceImpl1收到: {}.", hello.getMessage());
         String result = "Hello description is " + hello.getDescription();
-        log.info("HelloServiceImpl返回: {}.", result);
+        log.info("HelloServiceImpl1返回: {}.", result);
         return result;
     }
 }

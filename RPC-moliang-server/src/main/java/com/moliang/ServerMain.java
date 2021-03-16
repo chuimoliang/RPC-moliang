@@ -1,6 +1,7 @@
 package com.moliang;
 
 import com.moliang.annotation.EnableRpc;
+import com.moliang.annotation.EnableRpcServer;
 import com.moliang.transport.netty.server.NettyServer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * @Date 2021/1/24 23:47
  * @Version 1.0
  */
+//@EnableRpcServer
 @EnableRpc(packages = "com.moliang")
 public class ServerMain {
     public static void main(String[] args) throws InterruptedException {

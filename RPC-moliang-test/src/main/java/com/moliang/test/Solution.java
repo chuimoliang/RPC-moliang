@@ -1,15 +1,40 @@
 package com.moliang.test;
 
+import org.springframework.stereotype.Component;
+
 import java.util.*;
 import java.util.concurrent.*;
 
 /**
- * @Use leetcode刷题所用临时文件
+ * @Use LeetCode
  * @Author Chui moliang
  * @Date 2021/1/22 13:26
  * @Version 1.0
  */
 public class Solution {
+
+    public int[][] merge(int[][] intervals) {
+        if (intervals.length == 0) return intervals;
+        Arrays.sort(intervals, (Comparator.comparingInt(o -> o[0])));
+        int[][] ans = new int[10][];
+        int index = 0;
+        int pre = intervals[0][0], big = intervals[0][1];
+        for(int i = 1;i < intervals.length;i++) {
+            int[] t = intervals[i];
+            if (t[0] > big) {
+                if (index == ans.length) {
+                    ans = Arrays.copyOf(ans, index + index);
+                }
+                ans[index] = new int[]{pre, big};
+                index++;
+                pre = t[0];
+            }
+            big = Math.max(t[1], big);
+        }
+        ans[index] = new int[]{pre, big};
+        return Arrays.copyOf(ans, index + 1);
+    }
+
     int[][] matrix;
     int[][] result;
     int[][] visit;
@@ -275,11 +300,16 @@ public class Solution {
         return ans;
     }
 
+    static {
+        System.out.println(System.currentTimeMillis() + "--------------Solution 静态代码块 ---------------");
+    }
 
-
-    public static void main(String[] args) {
-        String str = new String();
-        PriorityQueue q = new PriorityQueue();
-        System.out.println(q.remove(9));
+    public static void main(String[] args) throws InterruptedException {
+        Thread.sleep(1000);
+        Solution s = new Solution();
+        Thread.sleep(1000);
+        Test t = new Test();
+        Thread.sleep(1000);
+        Test t2 = new Test();
     }
 }

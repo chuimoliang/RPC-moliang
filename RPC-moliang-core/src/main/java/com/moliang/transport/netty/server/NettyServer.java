@@ -7,6 +7,7 @@ import com.moliang.registry.util.ThreadPoolFactoryUtils;
 import com.moliang.transport.codec.MyDecoder;
 import com.moliang.transport.codec.MyEncoder;
 import com.moliang.transport.netty.client.NettyClientHandler;
+import com.moliang.utils.GracefulOfflineUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -50,7 +51,7 @@ public class NettyServer {
 
     @SneakyThrows
     public void start() {
-        //CustomShutdownHook.getCustomShutdownHook().clearAll();
+        GracefulOfflineUtil.getGracefulOfflineUtil().offline();
         String host = InetAddress.getLocalHost().getHostAddress();
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
