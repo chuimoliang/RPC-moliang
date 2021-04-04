@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Field;
 
 /**
- * @Use
+ * @Use 代理 Bean 设置
  * @Author Chui moliang
  * @Date 2021/1/29 1:35
  * @Version 1.0
@@ -33,17 +33,21 @@ public class ReferenceAnnotationHandler implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        // 获得 bean 类型
         Class<?> targetClass = bean.getClass();
         Field[] declaredFields = targetClass.getDeclaredFields();
         for (Field declaredField : declaredFields) {
             RpcReference rpcReference = declaredField.getAnnotation(RpcReference.class);
             if (rpcReference != null) {
+                // 获得引用服务参数
                 RpcServiceProperties rpcServiceProperties = RpcServiceProperties.builder()
                         .group(rpcReference.group()).version(rpcReference.version()).build();
+                // 生成代理操作类
                 RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient, rpcServiceProperties);
                 Object clientProxy = rpcClientProxy.getProxy(declaredField.getType());
                 declaredField.setAccessible(true);
                 try {
+                    // 将实例设置为代理类型
                     declaredField.set(bean, clientProxy);
                 } catch (IllegalAccessException e) {
                     log.error(e.getMessage());

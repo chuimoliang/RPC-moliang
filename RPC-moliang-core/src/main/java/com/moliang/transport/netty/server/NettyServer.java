@@ -45,10 +45,6 @@ public class NettyServer {
         this.serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
     }
 
-    public void registerService(Object service, RpcServiceProperties rpcServiceProperties) {
-        serviceProvider.publishService(service, rpcServiceProperties);
-    }
-
     @SneakyThrows
     public void start() {
         // 优雅下线钩子方法
