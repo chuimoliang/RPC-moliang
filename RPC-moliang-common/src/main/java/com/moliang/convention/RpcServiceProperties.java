@@ -20,9 +20,7 @@ import java.util.Map;
 public class RpcServiceProperties {
 
     private String version;
-    /**
-     * 通过group选择接口的实现
-     */
+    /** 通过group选择接口的实现 **/
     private String group;
     private String serviceName;
 

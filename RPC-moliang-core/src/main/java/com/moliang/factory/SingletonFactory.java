@@ -1,6 +1,5 @@
 package com.moliang.factory;
 
-import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;

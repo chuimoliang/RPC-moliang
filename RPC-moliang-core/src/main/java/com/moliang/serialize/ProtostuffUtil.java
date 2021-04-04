@@ -1,6 +1,5 @@
 package com.moliang.serialize;
 
-import com.esotericsoftware.kryo.Kryo;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
@@ -20,10 +19,8 @@ public class ProtostuffUtil implements Serializer {
      * 避免每次序列化重新申请空间 其中 DEFAULT_BUFFER_SIZE = 512;
      */
     //private static final LinkedBuffer BUFFER = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
-    private final ThreadLocal<LinkedBuffer> protoThreadLocal = ThreadLocal.withInitial(() -> {
-        LinkedBuffer BUFFER = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
-        return BUFFER;
-    });
+    private final ThreadLocal<LinkedBuffer> protoThreadLocal =
+            ThreadLocal.withInitial(() -> LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
 
     /**
      * 序列化方法

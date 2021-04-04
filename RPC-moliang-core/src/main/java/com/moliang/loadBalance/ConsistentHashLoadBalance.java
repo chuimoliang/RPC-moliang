@@ -41,7 +41,7 @@ public class ConsistentHashLoadBalance implements LoadBalance {
     protected String doSelect(List<String> serviceAddresses, String rpcServiceName) {
         // 获得服务器集合哈希码
         int identityHashCode = System.identityHashCode(serviceAddresses);
-        // 获得一致性哈希选择器
+        // 获得选择器
         ConsistentHashSelector selector = selectors.get(rpcServiceName);
         // 检查更新
         if (selector == null || selector.identityHashCode != identityHashCode) {
@@ -87,8 +87,18 @@ public class ConsistentHashLoadBalance implements LoadBalance {
             return md.digest();
         }
 
+        /**
+         *
+         * @param digest
+         * @param idx
+         * @return
+         */
         static long hash(byte[] digest, int idx) {
-            return ((long) (digest[3 + idx * 4] & 255) << 24 | (long) (digest[2 + idx * 4] & 255) << 16 | (long) (digest[1 + idx * 4] & 255) << 8 | (long) (digest[idx * 4] & 255)) & 4294967295L;
+            return (  (long) (digest[3 + idx * 4] & 255) << 24
+                    | (long) (digest[2 + idx * 4] & 255) << 16
+                    | (long) (digest[1 + idx * 4] & 255) << 8
+                    | (long) (digest[idx * 4] & 255))
+                    & 4294967295L;
         }
 
         public String select(String rpcServiceName) {
@@ -105,5 +115,12 @@ public class ConsistentHashLoadBalance implements LoadBalance {
 
             return entry.getValue();
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(ConsistentHashSelector.md5("fasdasdasdasdasdasdasdasdasdasdasd").length);
+        System.out.println(ConsistentHashSelector.md5("ffadssdasdasdasdasd"));
+        System.out.println(ConsistentHashSelector.md5("fasdasdafadsfadsfadssdasdasdasdasdasdasdasdasd"));
+
     }
 }

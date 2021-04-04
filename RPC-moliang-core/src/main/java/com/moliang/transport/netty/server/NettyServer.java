@@ -51,7 +51,9 @@ public class NettyServer {
 
     @SneakyThrows
     public void start() {
+        // 优雅下线钩子方法
         GracefulOfflineUtil.getGracefulOfflineUtil().offline();
+        // 本机IP+端口
         String host = InetAddress.getLocalHost().getHostAddress();
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -62,6 +64,7 @@ public class NettyServer {
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
+                    // 指定 IO 模型
                     .channel(NioServerSocketChannel.class)
                     // TCP默认开启了 Nagle 算法，该算法的作用是尽可能的发送大数据快，减少网络传输。TCP_NODELAY 参数的作用就是控制是否启用 Nagle 算法。
                     .childOption(ChannelOption.TCP_NODELAY, true)

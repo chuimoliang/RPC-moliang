@@ -1,9 +1,11 @@
 package com.moliang.test;
 
-import org.springframework.stereotype.Component;
+import io.netty.buffer.CompositeByteBuf;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @Use LeetCode
@@ -13,303 +15,146 @@ import java.util.concurrent.*;
  */
 public class Solution {
 
-    public int[][] merge(int[][] intervals) {
-        if (intervals.length == 0) return intervals;
-        Arrays.sort(intervals, (Comparator.comparingInt(o -> o[0])));
-        int[][] ans = new int[10][];
-        int index = 0;
-        int pre = intervals[0][0], big = intervals[0][1];
-        for(int i = 1;i < intervals.length;i++) {
-            int[] t = intervals[i];
-            if (t[0] > big) {
-                if (index == ans.length) {
-                    ans = Arrays.copyOf(ans, index + index);
-                }
-                ans[index] = new int[]{pre, big};
-                index++;
-                pre = t[0];
-            }
-            big = Math.max(t[1], big);
-        }
-        ans[index] = new int[]{pre, big};
-        return Arrays.copyOf(ans, index + 1);
-    }
-
-    int[][] matrix;
-    int[][] result;
-    int[][] visit;
-    int r;
-    int ct;
-    public int longestIncreasingPath(int[][] matrix) {
-        this.matrix = matrix;
-        r = matrix.length; ct = matrix[0].length;
-        result = new int[r][ct];
-        visit = new int[r][ct];
-        for(int[] e: result) Arrays.fill(e, -1);
+    public int numRabbits(int[] answers) {
+        Map<Integer, Integer> map = new HashMap<>();
         int ans = 0;
-        for(int i = 0;i < r;i++) {
-            for(int j = 0;j < ct;j++) {
-                ans = Math.max(ans, once(i, j, visit, 0));
-            }
-        }
-        return ans;
-    }
-
-    int[][] step = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-    public int once(int i, int j, int[][] visit, int sum) {
-        visit[i][j] = 1;
-        int now = matrix[i][j];
-        sum++;
-        int ans = sum;
-        for(int c = 0;c < 4;c++) {
-            int ix = i + step[c][0], iy = j + step[c][1];
-            if(ix >= 0 && iy >= 0 && ix < r && iy < ct && visit[ix][iy] == 0 && matrix[ix][iy] > now) {
-                if(result[ix][iy] != -1) ans = Math.max(ans, sum + result[ix][iy]);
-                else ans = Math.max(ans, once(ix, iy, visit, sum));
-            }
-        }
-        visit[i][j] = 0;
-        result[i][j] = ans - sum + 1;
-        return ans;
-    }
-
-    int[][] points;
-    public int maxPoints(int[][] points) {
-        if(points.length < 2) return points.length;
-        this.points = points;
-        Map<Edge, Set<Integer>> map = new HashMap<>();
-        for(int i = 0;i < points.length;i++) {
-            for(int j = i + 1;j < points.length;j++) {
-                Edge edge = calculate(i, j);
-                Set<Integer> set = map.getOrDefault(edge, new HashSet<Integer>());
-                set.add(i); set.add(j);
-                map.put(edge, set);
-            }
-        }
-        int ans = 0;
-        for(Set<Integer> e : map.values()) {
-            System.out.println(e);
-            ans = Math.max(ans, e.size());
-        }
-        return ans;
-    }
-
-    public Edge calculate(int i, int j) {
-        if(points[i][0] == points[j][0]) {
-            return new Edge(points[j][0]);
-        }
-        double k = (double) (points[i][1] - points[j][1]) / (double) (points[i][0] - points[j][0]);
-        float b = (float) ((double) points[i][1] - k * (double) points[i][0]);
-        return new Edge(k, b);
-    }
-
-    class Edge {
-        double k;
-        double b;
-        int x;
-        public Edge(double k, float b) {
-            this.k = k;
-            this.b = b;
-            x = 0;
-        }
-
-        public Edge(int x) {
-            this.x = x;
-        }
-
-        @Override
-        public int hashCode() {
-            if(x == 0)
-            return (int)k << 2 + (int)b << 2 ;
-            else return x << 2;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if(obj instanceof Edge) {
-                return this.k == ((Edge) obj).k && this.b == ((Edge) obj).b && this.x == ((Edge) obj).x;
-            }
-            return false;
-        }
-
-    }
-
-    public String fractionToDecimal(int numerator, int denominator) {
-        long x = (long) Math.abs(numerator), y = (long) Math.abs(denominator);
-        long value = x / y;
-        long remain = x % y;
-        if(x < 0 ^ y < 0) value *= -1;
-        if(remain == 0) return String.valueOf(value);
-        StringBuilder str = new StringBuilder();
-        str.append(String.valueOf(value) + ".");
-        Map<Long, Integer> map = new HashMap<>();
-        while(remain != 0) {
-            if(map.containsKey(remain)) {
-                str.insert(map.get(remain), "(");
-                str.append(")");
-                return new String(str);
-            }
-            map.put(remain, str.length());
-            str.append(String.valueOf(remain * 10 / y));
-            remain = (remain * 10) % y;
-        }
-        return null;
-    }
-
-    public int reverseBits(int n) {
-        return Integer.reverse(n);
-    }
-
-    public void futureTest() throws ExecutionException, InterruptedException {
-        ExecutorService executors = Executors.newSingleThreadExecutor();
-        Future<String> future = executors.submit(()-> {
-            for(int i = 0;i < 100;i++) {
-                System.out.println(Thread.currentThread().getName() + i);
-            }
-            return Thread.currentThread().getName();
-        });
-        System.out.println(Thread.currentThread().getName() + " +++ " + future.get());
-    }
-
-    class TreeNode {
-        int val;
-        TreeNode left;
-        TreeNode right;
-        TreeNode(int x) { val = x; }
-    }
-
-    public int[] levelOrder(TreeNode root) {
-        if(root == null) return new int[0];
-        int[] nums = new int[10]; int index = 0;
-        Queue<TreeNode> q = new LinkedList<>();
-        q.add(root);
-        while(!q.isEmpty()) {
-            int size = q.size();
-            for(int i = 0;i < size;i++) {
-                TreeNode node = q.poll();
-                if(nums.length <= index) {
-                    int length = index + index >> 1;
-                    nums = Arrays.copyOf(nums, length);
-                }
-                nums[index] = node.val;
-                index++;
-                if(node.left != null) q.add(node.left);
-                if(node.right != null) q.add(node.right);
-            }
-        }
-        return Arrays.copyOf(nums, index);
-    }
-
-    public int countBalls(int lowLimit, int highLimit) {
-        int[] nums = new int[10];
-        int ans = 0;
-        for(int i = lowLimit;i <= highLimit;i++) {
-            int index = calculate(i);
-            while(nums.length <= index) {
-                nums = Arrays.copyOf(nums, nums.length << 1);
-            }
-            nums[index]++;
-            ans = Math.max(nums[index], ans);
-        }
-        return ans;
-    }
-
-    public int calculate(int x) {
-        int ans = 0;
-        while(x > 0) {
-            ans += x % 10;
-            x /= 10;
-        }
-        return ans;
-    }
-
-    public int[] restoreArray(int[][] adjacentPairs) {
-        int n = adjacentPairs.length + 1;
-        int[] ans = new int[n];
-        HashMap<Integer, List<Integer>> map = new HashMap<>();
-        for(int[] t : adjacentPairs) {
-            List<Integer> l1 = map.getOrDefault(t[0], new ArrayList<>());
-            l1.add(t[1]);
-            map.put(t[0], l1);
-            List<Integer> l2 = map.getOrDefault(t[1], new ArrayList<>());
-            l2.add(t[0]);
-            map.put(t[1], l2);
-        }
-        int index = 0;
-        for(Map.Entry<Integer, List<Integer>> t : map.entrySet()) {
-            if(t.getValue().size() == 1) index =t.getKey();
-        }
-        int i = 0;
-        while(i < n) {
-            ans[i] = index;
-            int next = map.get(index).get(0);
-            List<Integer> temp = map.get(next);
-            for(int z = 0;z < 2;z++) {
-                if (temp.get(z) == index) {
-                    temp.remove(z);
-                    break;
+        for (int e : answers) {
+            if (e == 0) {
+                ans ++;
+            } else {
+                int num = map.getOrDefault(e, 0);
+                if (num == e + 1 || num == 0) {
+                    ans += e + 1;
+                    map.put(e, 1);
+                } else {
+                    map.put(e, num + 1);
                 }
             }
-            i++;
         }
         return ans;
     }
 
-    public boolean[] canEat(int[] candiesCount, int[][] queries) {
-        boolean[] ans = new boolean[queries.length];
-        double[] tab1 = new double[candiesCount.length];
-        double[] tab2 = new double[candiesCount.length];
-        double temp = 0; int c = 0;
-        for(int e : candiesCount) {
-            temp += e;
-            tab2[c] = temp;
-            if(c < tab1.length - 1) tab1[c + 1] = temp;
-            c++;
+    public String reverseVowels(String s) {
+        int l = 0, r = s.length() - 1;
+        Set<Character> set = new HashSet<>();
+        char[] tab = new char[]{'a', 'o', 'e', 'i', 'u', 'v', 'A', 'O', 'I', 'U', 'V'};
+        for (char e : tab) {
+            set.add(e);
         }
-        c = 0;
-        for(int[] t : queries) {
-            ans[c] = tab1[t[0]] / (double) t[2] < (double) (t[1] + 1) && tab2[t[0]] > t[1];
-            c++;
+        char[] chars = s.toCharArray();
+        while(l < r) {
+            while(l < r && !set.contains(s.charAt(l))) l++;
+            while(l < r && !set.contains(s.charAt(r))) r--;
+            char temp = chars[l];
+            chars[l] = chars[r];
+            chars[r] = temp;
+            l++;
+            r--;
         }
-        return ans;
+        return String.valueOf(chars);
     }
-    int[][] res;
-    char[] chars;
-    public boolean checkPartitioning(String s) {
-        int len = s.length();
-        res = new int[len][len];
-        chars = s.toCharArray();
-        List<Integer> ll = new ArrayList<>();
-        for(int i = 0;i < len;i++) {
-            res[i][i] = 2;
-        }
-        for(int i = 1;i < len - 2;i++) {
-            for(int l = 1;l + i < len;l++) {
-                if(isPartition(0, l -1) && isPartition(l, l + i - 1) && isPartition(l + i, len - 1))
-                    return true;
+
+    private List<String> ans = new ArrayList<>();
+    Map<String, PriorityQueue<String>> map;
+    public List<String> findItinerary(List<List<String>> tickets) {
+        map = new HashMap<>();
+        for (List<String> l : tickets) {
+            if (!map.containsKey(l.get(0))) {
+                map.put(l.get(0), new PriorityQueue<>());
             }
+            map.get(l.get(0)).add(l.get(1));
         }
-        return false;
-    }
-    public boolean isPartition(int l, int r) {
-        if(res[l][r] > 0) return res[l][r] > 1;
-        boolean ans = chars[l] == chars[r] &&(l > r || isPartition(l + 1, r - 1));
-        if(ans)
-        res[l][r] = 2;
-        else res[l][r] = 1;
+        dfs("JFK");
+        Collections.reverse(ans);
         return ans;
     }
 
-    static {
-        System.out.println(System.currentTimeMillis() + "--------------Solution 静态代码块 ---------------");
+    private void dfs(String s) {
+        while (map.get(s) != null && map.get(s).size() > 0) {
+            dfs(map.get(s).poll());
+        }
+        ans.add(s);
     }
+    final Lock lock = new ReentrantLock();
+    final Condition notFull = lock.newCondition();
+    final Condition notEmpty = lock.newCondition();
+    final Object[] items = new Object[100];
+    int putptr, takeptr, count;
+
+    public void put(Object x) throws InterruptedException {
+        Runtime.getRuntime().availableProcessors();
+        lock.lock();
+        try {
+            while (count == items.length)
+                notFull.await();
+            items[putptr] = x;
+            if (++putptr == items.length) putptr = 0;
+            ++count;
+            notEmpty.signal();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public Object take() throws InterruptedException {
+        lock.lock();
+        try {
+            while (count == 0)
+                notEmpty.await();
+            Object x = items[takeptr];
+            System.out.println(x.toString());
+            if (++takeptr == items.length) takeptr = 0;
+            --count;
+            notFull.signal();
+            return x;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    static Solution s = new Solution();
 
     public static void main(String[] args) throws InterruptedException {
+        Thread t1 = new Thread(()->{
+            while (true) {
+                try {
+                    s.take();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Thread t2 = new Thread(()->{
+            int i = 0;
+            while (true) {
+                try {
+                    s.put(String.valueOf(i++));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+            System.out.println("程序执行完毕, 退出");
+        }));
+        String s = "3,5,5,6,9,1,4,5,0,5],[2,7,9,5,9,5,4,9,6,8],[6,0,7,8,1,0,1,6,8,1],[7,2,6,5,8,5,6,5,0,6],[2,3," +
+                "3,1,0,4,6,5,3,5],[5,9,7,3,8,8,5,1,4,3],[2,4,7,9,9,8,4,7,3,7],[3,5,2,8,8,2,2,4,9,8";
+        String[] t = s.split("],\\[");
+        int[][] nums = new int[t.length][];
+        for (int i = 0;i < t.length;i++) {
+            String[] temp = t[i].split(",");
+            int[] num = new int[temp.length];
+            for (int j = 0;j < num.length;j++) {
+                num[j] = Integer.parseInt(temp[j]);
+            }
+            nums[i] = num;
+        }
+        for (int[] te : nums) {
+            System.out.println(Arrays.toString(te));
+        }
+        t1.start();
+        t2.start();
         Thread.sleep(1000);
-        Solution s = new Solution();
-        Thread.sleep(1000);
-        Test t = new Test();
-        Thread.sleep(1000);
-        Test t2 = new Test();
+
     }
 }

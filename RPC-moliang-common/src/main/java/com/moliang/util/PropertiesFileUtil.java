@@ -1,6 +1,5 @@
 package com.moliang.util;
 
-import com.moliang.convention.enums.RpcConfigEnum;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileInputStream;

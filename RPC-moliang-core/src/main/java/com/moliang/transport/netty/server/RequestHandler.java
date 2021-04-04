@@ -36,11 +36,7 @@ public class RequestHandler {
     }
 
     /**
-     * get method execution results
-     *
-     * @param rpcRequest client request
-     * @param service    service object
-     * @return the result of the target method execution
+     * 获取方法执行结果
      */
     private Object invokeTargetMethod(RpcRequest rpcRequest, Object service) {
         Object result;

@@ -10,7 +10,7 @@
 ## Netty的优点
 1. API使用简单，学习成本低。 
 2. 功能强大，内置了多种解码编码器，支持多种协议, 自带编码器解码器, 解决TCP粘包/拆包问题
-3. 性能高，对比其他主流的NIO框架，Netty的性能最优。
+3. 性能高，对比其他主流的NIO框架，Netty的性能最优。性能高的原因 : 非阻塞IO, 零拷贝
 4. 社区活跃，发现BUG会及时修复，迭代版本周期短，不断加入新的功能。 
 5. Dubbo、Elasticsearch都采用了Netty，质量得到验证。
 ## Netty结构
@@ -48,3 +48,6 @@ Netty中采用的是主从Reactor多线程模式, 因为单Reactor模式在高�
 
    bootstrap意思是引导，一个Netty应用通常由一个Bootstrap开始，主要作用是配置整个netty程序，串联各个组件。ServerBootstrap是服务端启动引导类，Bootstrap是客户端启动引导类
 ## Netty零拷贝
+1. CompositeByteBuf 类, 将多个 ByteBuf 合并为逻辑上的一个 ByteBuf , 避免各个 ByteBuf 之间的拷贝
+2. 通过 slice 操作, 因此可以将 ByteBuf 分解为多个共享同一个存储区域的ByteBuf, 避免了内存的拷⻉
+3. 通过FileRegion包装的FileChannel.tranferTo实现文件传输, 可以直接将文件缓冲区的数据发送到目标Channel, 避免了传统通过循环 write 方式导致的内存拷⻉问题
