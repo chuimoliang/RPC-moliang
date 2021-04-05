@@ -1,12 +1,11 @@
 package com.moliang.transport.netty.server;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.moliang.factory.SingletonFactory;
 import com.moliang.provider.ServiceProvider;
 import com.moliang.provider.ServiceProviderImpl;
-import com.moliang.registry.util.ThreadPoolFactoryUtils;
 import com.moliang.transport.codec.MyDecoder;
 import com.moliang.transport.codec.MyEncoder;
-import com.moliang.transport.netty.client.NettyClientHandler;
 import com.moliang.utils.GracefulOfflineUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -19,13 +18,11 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
-import com.moliang.convention.RpcServiceProperties;
 
 import java.net.InetAddress;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -55,7 +52,7 @@ public class NettyServer {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         DefaultEventExecutorGroup serviceHandlerGroup = new DefaultEventExecutorGroup(
                 Runtime.getRuntime().availableProcessors() * 2,
-                ThreadPoolFactoryUtils.createThreadFactory("service-handler-group", false)
+                createThreadFactory("service-handler-group", false)
         );
         try {
             ServerBootstrap b = new ServerBootstrap();
@@ -94,6 +91,26 @@ public class NettyServer {
             workerGroup.shutdownGracefully();
             serviceHandlerGroup.shutdownGracefully();
         }
+    }
+
+    /**
+     * 创建 ThreadFactory。如果threadNamePrefix不为空则使用自建ThreadFactory，否则使用defaultThreadFactory
+     *
+     * @param threadNamePrefix 作为创建的线程名字的前缀
+     * @param daemon           指定是否为 Daemon Thread(守护线程)
+     * @return ThreadFactory
+     */
+    public static ThreadFactory createThreadFactory(String threadNamePrefix, Boolean daemon) {
+        if (threadNamePrefix != null) {
+            if (daemon != null) {
+                return new ThreadFactoryBuilder()
+                        .setNameFormat(threadNamePrefix + "-%d")
+                        .setDaemon(daemon).build();
+            } else {
+                return new ThreadFactoryBuilder().setNameFormat(threadNamePrefix + "-%d").build();
+            }
+        }
+        return Executors.defaultThreadFactory();
     }
 
 }

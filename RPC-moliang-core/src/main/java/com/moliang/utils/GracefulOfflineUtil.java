@@ -1,7 +1,6 @@
 package com.moliang.utils;
 
 import com.moliang.registry.util.CuratorUtil;
-import com.moliang.registry.util.ThreadPoolFactoryUtils;
 import com.moliang.transport.netty.server.NettyServer;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +31,6 @@ public class GracefulOfflineUtil {
                 CuratorUtil.clearRegistry(CuratorUtil.getZkClient(), inetSocketAddress);
             } catch (UnknownHostException ignored) {
             }
-            ThreadPoolFactoryUtils.shutDownAllThreadPool();
         }));
     }
 
