@@ -1,14 +1,14 @@
 com.moliang.registry.ServiceDiscovery:
   zk: com.moliang.registry.zk.ZkServiceDiscovery
-  nacos: com.moliang.registry.nacos.NacosServiceDiscovery
+  #nacos: com.moliang.registry.nacos.NacosServiceDiscovery
 com.moliang.registry.ServiceRegistry:
   zk: com.moliang.registry.zk.ZkServiceRegistry
-  nacos: com.moliang.registry.nacos.NacosServiceRegistry
+  #nacos: com.moliang.registry.nacos.NacosServiceRegistry
 com.moliang.serialize.Serializer:
   kryo: com.moliang.serialize.KryoUtil
   protostuff: com.moliang.serialize.ProtostuffUtil
 com.moliang.loadBalance.LoadBalance:
   rand: com.moliang.loadBalance.RandomLoadBalance
-  hash: com.moliang.loadBalnace.ConsistentHashLoadBalance
+  hash: com.moliang.loadBalance.ConsistentHashLoadBalance
 com.moliang.transport.RequestTransport:
   netty: com.moliang.transport.netty.client.NettyClient

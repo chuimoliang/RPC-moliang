@@ -20,6 +20,7 @@ import java.lang.annotation.Annotation;
  * @Date 2021/1/29 23:29
  * @Version 1.0
  */
+@Slf4j
 public class BeanScanner extends ClassPathBeanDefinitionScanner {
 
 

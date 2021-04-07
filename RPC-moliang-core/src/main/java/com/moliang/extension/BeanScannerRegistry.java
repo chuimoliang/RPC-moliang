@@ -1,6 +1,7 @@
 package com.moliang.extension;
 
 import com.moliang.annotation.EnableRpc;
+import com.moliang.annotation.RpcReference;
 import com.moliang.annotation.RpcService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;

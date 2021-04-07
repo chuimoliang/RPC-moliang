@@ -3,11 +3,13 @@ package com.moliang.registry.zk;
 import com.moliang.convention.exception.RpcErrorCode;
 import com.moliang.convention.exception.RpcException;
 import com.moliang.extension.ExtensionLoader;
+import com.moliang.extension.ObtainConfig;
 import com.moliang.loadBalance.LoadBalance;
 import com.moliang.registry.ServiceDiscovery;
 import com.moliang.registry.util.CuratorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.List;
  */
 @Slf4j
 public class ZkServiceDiscovery implements ServiceDiscovery {
+
     private final LoadBalance loadBalance;
 
     public ZkServiceDiscovery() {

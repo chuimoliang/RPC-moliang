@@ -28,6 +28,7 @@ public class ReferenceAnnotationHandler implements BeanPostProcessor {
     private final RequestTransport rpcClient;
 
     public ReferenceAnnotationHandler() {
+        log.info("客户端初始化");
         this.rpcClient = ExtensionLoader.getExtensionLoader(RequestTransport.class).getExtension("netty");
     }
 

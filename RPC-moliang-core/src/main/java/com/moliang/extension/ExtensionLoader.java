@@ -140,11 +140,11 @@ public class ExtensionLoader<T> {
                     Class<?> clazz = classLoader.loadClass(t.getValue());
                     extensionClasses.put(t.getKey(), clazz);
                 } catch (ClassNotFoundException e) {
-                    log.error(e.getMessage());
+                    log.error("ClassNotFoundException - " + e.getMessage());
                 }
             }
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("IOException - " + e.getMessage());
         }
     }
 

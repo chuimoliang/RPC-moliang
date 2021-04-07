@@ -12,8 +12,10 @@ public enum RpcConfigEnum {
     SERVICE_PATTERN("rpc.service"),
     ZK_ADDRESS("rpc.zookeeper.address"),
     NACOS_ADDRESS("rpc.nacos.address"),
-    LOAD_BALANCE_TYPE("rpc.loadBalance"),
-    SERIALIZE_TYPE("rpc.serialize");
+
+    LOAD_BALANCE_TYPE("rpc.loadBalance.mode"),
+    ENCODE_SERIALIZE_TYPE("rpc.encode.mode"),
+    DECODE_SERIALIZE_TYPE("rpc.decode.mode");
 
     private final String propertyValue;
 

@@ -11,13 +11,13 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * @Date 2021/1/24 23:47
  * @Version 1.0
  */
-//@EnableRpcServer
+@EnableRpcServer
 @EnableRpc(packages = "com.moliang")
 public class ServerMain {
     public static void main(String[] args) throws InterruptedException {
         // 通过注释注册服务
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ServerMain.class);
-        NettyServer ns = (NettyServer) ctx.getBean("nettyServer");
-        ns.start();
+        //NettyServer ns = (NettyServer) ctx.getBean("nettyServer");
+        //ns.start();
     }
 }

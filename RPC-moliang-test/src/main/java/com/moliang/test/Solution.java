@@ -15,125 +15,61 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Solution {
 
-    public int numRabbits(int[] answers) {
-        Map<Integer, Integer> map = new HashMap<>();
-        int ans = 0;
-        for (int e : answers) {
-            if (e == 0) {
-                ans ++;
-            } else {
-                int num = map.getOrDefault(e, 0);
-                if (num == e + 1 || num == 0) {
-                    ans += e + 1;
-                    map.put(e, 1);
-                } else {
-                    map.put(e, num + 1);
-                }
-            }
-        }
-        return ans;
-    }
-
-    public String reverseVowels(String s) {
-        int l = 0, r = s.length() - 1;
-        Set<Character> set = new HashSet<>();
-        char[] tab = new char[]{'a', 'o', 'e', 'i', 'u', 'v', 'A', 'O', 'I', 'U', 'V'};
-        for (char e : tab) {
-            set.add(e);
-        }
-        char[] chars = s.toCharArray();
-        while(l < r) {
-            while(l < r && !set.contains(s.charAt(l))) l++;
-            while(l < r && !set.contains(s.charAt(r))) r--;
-            char temp = chars[l];
-            chars[l] = chars[r];
-            chars[r] = temp;
-            l++;
-            r--;
-        }
-        return String.valueOf(chars);
-    }
-
-    private List<String> ans = new ArrayList<>();
-    Map<String, PriorityQueue<String>> map;
-    public List<String> findItinerary(List<List<String>> tickets) {
-        map = new HashMap<>();
-        for (List<String> l : tickets) {
-            if (!map.containsKey(l.get(0))) {
-                map.put(l.get(0), new PriorityQueue<>());
-            }
-            map.get(l.get(0)).add(l.get(1));
-        }
-        dfs("JFK");
-        Collections.reverse(ans);
-        return ans;
-    }
-
-    private void dfs(String s) {
-        while (map.get(s) != null && map.get(s).size() > 0) {
-            dfs(map.get(s).poll());
-        }
-        ans.add(s);
-    }
-    final Lock lock = new ReentrantLock();
-    final Condition notFull = lock.newCondition();
-    final Condition notEmpty = lock.newCondition();
-    final Object[] items = new Object[100];
-    int putptr, takeptr, count;
-
-    public void put(Object x) throws InterruptedException {
-        Runtime.getRuntime().availableProcessors();
-        lock.lock();
-        try {
-            while (count == items.length)
-                notFull.await();
-            items[putptr] = x;
-            if (++putptr == items.length) putptr = 0;
-            ++count;
-            notEmpty.signal();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public Object take() throws InterruptedException {
-        lock.lock();
-        try {
-            while (count == 0)
-                notEmpty.await();
-            Object x = items[takeptr];
-            System.out.println(x.toString());
-            if (++takeptr == items.length) takeptr = 0;
-            --count;
-            notFull.signal();
-            return x;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    static Solution s = new Solution();
+    private static ReentrantLock lock = new ReentrantLock();
+    private static Condition a = lock.newCondition();
+    private static Condition b = lock.newCondition();
+    private static Condition c = lock.newCondition();
+    private static int num = 1;
 
     public static void main(String[] args) throws InterruptedException {
         Thread t1 = new Thread(()->{
             while (true) {
+                lock.lock();
                 try {
-                    s.take();
+                    if (num != 1) {
+                        a.await();
+                    }
+                    System.out.println(Thread.currentThread().getName());
+                    num++;
+                    b.signal();
+                    lock.unlock();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        });
+        }, "A");
         Thread t2 = new Thread(()->{
-            int i = 0;
             while (true) {
+                lock.lock();
                 try {
-                    s.put(String.valueOf(i++));
+                    if (num != 2) {
+                        b.await();
+                    }
+                    System.out.println(Thread.currentThread().getName());
+                    num++;
+                    c.signal();
+                    lock.unlock();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        });
+        }, "B");
+        Thread t3 = new Thread(()->{
+            while (true) {
+                lock.lock();
+                try {
+                    if (num != 3) {
+                        c.await();
+                    }
+                    System.out.println(Thread.currentThread().getName());
+                    num = 1;
+                    a.signal();
+                    lock.unlock();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "C");
         Runtime.getRuntime().addShutdownHook(new Thread(()->{
             System.out.println("程序执行完毕, 退出");
         }));
@@ -154,6 +90,7 @@ public class Solution {
         }
         t1.start();
         t2.start();
+        t3.start();
         Thread.sleep(1000);
 
     }
