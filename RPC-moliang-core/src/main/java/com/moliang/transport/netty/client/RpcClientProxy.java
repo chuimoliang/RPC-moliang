@@ -1,5 +1,6 @@
 package com.moliang.transport.netty.client;
 
+import com.moliang.context.RpcContext;
 import com.moliang.convention.RpcServiceProperties;
 import com.moliang.convention.enums.RpcResponseCode;
 import com.moliang.convention.exception.RpcErrorCode;
@@ -31,6 +32,7 @@ public class RpcClientProxy implements InvocationHandler {
 
     public RpcClientProxy(RequestTransport rpcRequestTransport, RpcServiceProperties rpcServiceProperties) {
         this.rpcRequestTransport = rpcRequestTransport;
+        // 组装服务参数
         if (rpcServiceProperties.getGroup() == null) {
             rpcServiceProperties.setGroup("");
         }
@@ -55,7 +57,7 @@ public class RpcClientProxy implements InvocationHandler {
     }
 
     /**
-     * 当您使用代理对象调用方法时，实际上会调用此方法。
+     * 当使用代理对象调用方法时，实际上会调用此方法。
      * 代理对象是您通过getProxy方法获得的对象。
      */
     @SneakyThrows
@@ -70,9 +72,15 @@ public class RpcClientProxy implements InvocationHandler {
                 .requestId(UUID.randomUUID().toString())
                 .group(rpcServiceProperties.getGroup())
                 .version(rpcServiceProperties.getVersion())
+                .async(rpcServiceProperties.isAsyncMode())
                 .build();
-        RpcResponse<Object> rpcResponse = null;
-        CompletableFuture<RpcResponse<Object>> completableFuture = (CompletableFuture<RpcResponse<Object>>) rpcRequestTransport.send(rpcRequest);
+        RpcResponse<Object> rpcResponse;
+        CompletableFuture<RpcResponse<Object>> completableFuture =
+                (CompletableFuture<RpcResponse<Object>>) rpcRequestTransport.send(rpcRequest);
+        if (rpcServiceProperties.isAsyncMode()) {
+            RpcContext.getContext().setFuture(completableFuture);
+            return null;
+        }
         rpcResponse = completableFuture.get();
         this.check(rpcResponse, rpcRequest);
         return rpcResponse.getData();

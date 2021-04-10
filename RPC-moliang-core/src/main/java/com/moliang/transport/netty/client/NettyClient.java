@@ -82,6 +82,7 @@ public class NettyClient implements RequestTransport {
                 log.info("客户端与 [{}] 连接成功!", inetSocketAddress.toString());
                 completableFuture.complete(future.channel());
             } else {
+
                 throw new IllegalStateException();
             }
         });
@@ -92,7 +93,10 @@ public class NettyClient implements RequestTransport {
     public Object send(RpcRequest rpcRequest) {
         CompletableFuture<RpcResponse<Object>> resultFuture = new CompletableFuture<>();
         String rpcServiceName = rpcRequest.toRpcProperties().toRpcServiceName();
+        // 获取服务地址
+        log.info(rpcServiceName);
         InetSocketAddress inetSocketAddress = serviceDiscovery.lookForService(rpcServiceName);
+        // 获得通道
         Channel channel = getChannel(inetSocketAddress);
         if (channel.isActive()) {
             unprocessedRequests.put(rpcRequest.getRequestId(), resultFuture);

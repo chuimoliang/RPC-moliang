@@ -42,7 +42,8 @@ public class ReferenceAnnotationHandler implements BeanPostProcessor {
             if (rpcReference != null) {
                 // 获得引用服务参数
                 RpcServiceProperties rpcServiceProperties = RpcServiceProperties.builder()
-                        .group(rpcReference.group()).version(rpcReference.version()).build();
+                        .group(rpcReference.group()).version(rpcReference.version())
+                        .asyncMode(rpcReference.async()).build();
                 // 生成代理操作类
                 RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient, rpcServiceProperties);
                 Object clientProxy = rpcClientProxy.getProxy(declaredField.getType());

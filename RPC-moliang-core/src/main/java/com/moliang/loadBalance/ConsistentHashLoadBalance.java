@@ -74,6 +74,7 @@ public class ConsistentHashLoadBalance implements LoadBalance {
 
         /**
          * 获取 key 的摘要
+         * 摘要为 16 个字节长度
          */
         static byte[] md5(String key) {
             MessageDigest md;
@@ -89,11 +90,13 @@ public class ConsistentHashLoadBalance implements LoadBalance {
 
         /**
          *
-         * @param digest
+         * @param digest 摘要
          * @param idx
-         * @return
          */
         static long hash(byte[] digest, int idx) {
+            /**
+             * 取摘要中连续的四个字节扩展成long类型
+             */
             return (  (long) (digest[3 + idx * 4] & 255) << 24
                     | (long) (digest[2 + idx * 4] & 255) << 16
                     | (long) (digest[1 + idx * 4] & 255) << 8
@@ -118,9 +121,10 @@ public class ConsistentHashLoadBalance implements LoadBalance {
     }
 
     public static void main(String[] args) {
-        System.out.println(ConsistentHashSelector.md5("fasdasdasdasdasdasdasdasdasdasdasd").length);
-        System.out.println(ConsistentHashSelector.md5("ffadssdasdasdasdasd"));
-        System.out.println(ConsistentHashSelector.md5("fasdasdafadsfadsfadssdasdasdasdasdasdasdasdasd"));
+        byte[] ans = ConsistentHashSelector.md5("ffadssdasdasdasdasd");
+        for (byte b : ans) {
+            System.out.println(b);
+        }
 
     }
 }

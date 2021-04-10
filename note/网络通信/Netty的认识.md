@@ -20,7 +20,8 @@ Netty中采用的是主从Reactor多线程模式, 因为单Reactor模式在高�
 ![img_5.png](img_5.png)
 服务端 : 
 1. 两组线程池 BossGroup专门负责接收客户端的连接, WorkGroup专门负责网络的读写, 它们的类型都是NioEventLoopGroup
-2. NioEventLoopGroup 相当于 1 个事件循环组，这个组里包含多个事件循环 NioEventLoop，每个 NioEventLoop 包含 1 个 Selector 和 1 个事件循环线程
+2. NioEventLoopGroup 相当于 1 个事件循环组，这个组里包含多个事件循环 NioEventLoop，
+   每个 NioEventLoop 包含 1 个 Selector 和 1 个事件循环线程
 3. NioEventLoopGroup 有几个线程，可以在创建时来指定 默认为 cpu 核 * 2 
 4. 每个 Boss NioEventLoop 循环执行的任务包含 3 步：
    1. 轮询 Accept 事件

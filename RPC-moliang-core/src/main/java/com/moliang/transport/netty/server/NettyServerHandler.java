@@ -38,7 +38,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler {
             log.info("服务端收到消息: [{}] ", msg);
             byte messageType = ((RpcMessage) msg).getMessageType();
             RpcMessage rpcMessage = RpcMessage.builder()
-                    .codecType(SerializationType.KRYO.getCode())
+                    .codecType(SerializationType.PROTOSTUFF.getCode())
                     .build();
             if (messageType == MyProtocol.REQUEST_HEART) {
                 rpcMessage.setMessageType(MyProtocol.RESPONSE_HEART);

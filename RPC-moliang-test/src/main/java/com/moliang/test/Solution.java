@@ -15,6 +15,30 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Solution {
 
+    public int findMin(int[] nums) {
+        return find(nums, 0, nums.length - 1);
+    }
+
+    private int find(int[] nums, int l, int r) {
+        if (l < r) {
+            int mid = (l + r) / 2;
+            if (nums[mid] < nums[r]) {
+                return find(nums, l, mid);
+            }
+            if (nums[mid] > nums[r]) {
+                return find(nums, mid + 1, r);
+            }
+            return find(nums, l, r - 1);
+        }
+        return nums[l];
+    }
+
+
+
+
+
+
+
     private static ReentrantLock lock = new ReentrantLock();
     private static Condition a = lock.newCondition();
     private static Condition b = lock.newCondition();
@@ -91,7 +115,7 @@ public class Solution {
         t1.start();
         t2.start();
         t3.start();
-        Thread.sleep(1000);
+        Thread.sleep(5000);
 
     }
 }

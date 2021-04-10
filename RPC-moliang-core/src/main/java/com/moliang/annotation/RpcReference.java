@@ -14,14 +14,14 @@ import java.lang.annotation.*;
 @Inherited
 public @interface RpcReference {
 
-    /**
-     * 服务版本，默认值为空字符串
-     */
+
+    /** 服务版本，默认值为空字符串 **/
     String version() default "";
 
-    /**
-     * 服务组，默认值为空字符串
-     */
+    /** 服务组，默认值为空字符串 **/
     String group() default "";
+
+    /** 是否为异步调用 **/
+    boolean async() default false;
 
 }

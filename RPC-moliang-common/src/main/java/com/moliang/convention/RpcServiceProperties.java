@@ -23,6 +23,7 @@ public class RpcServiceProperties {
     /** 通过group选择接口的实现 **/
     private String group;
     private String serviceName;
+    private boolean asyncMode;
 
     public String toRpcServiceName() {
         Map<Integer, Integer> map = new HashMap<>();

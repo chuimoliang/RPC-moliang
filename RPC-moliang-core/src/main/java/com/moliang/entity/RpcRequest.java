@@ -23,6 +23,7 @@ public class RpcRequest {
     private Class<?>[] paramTypes;
     private String version;
     private String group;
+    private boolean async;
 
     public RpcServiceProperties toRpcProperties() {
         return RpcServiceProperties.builder().serviceName(this.getInterfaceName())
