@@ -101,7 +101,7 @@ public class ConsistentHashLoadBalance implements LoadBalance {
                     | (long) (digest[2 + idx * 4] & 255) << 16
                     | (long) (digest[1 + idx * 4] & 255) << 8
                     | (long) (digest[idx * 4] & 255))
-                    & 4294967295L;
+                    & 4294967295L; // 0xFFFFFFFF
         }
 
         public String select(String rpcServiceName) {

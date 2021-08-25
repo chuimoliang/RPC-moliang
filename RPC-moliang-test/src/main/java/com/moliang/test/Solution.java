@@ -1,10 +1,8 @@
 package com.moliang.test;
 
-import io.netty.buffer.CompositeByteBuf;
-
 import java.util.*;
+import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -15,23 +13,176 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Solution {
 
-    public int findMin(int[] nums) {
-        return find(nums, 0, nums.length - 1);
+    public boolean isPowerOfTwo(int n) {
+        if (n == 1) {
+            return true;
+        }
+        return (n / 2) * 2 == n && isPowerOfTwo(n / 2);
     }
 
-    private int find(int[] nums, int l, int r) {
-        if (l < r) {
-            int mid = (l + r) / 2;
-            if (nums[mid] < nums[r]) {
-                return find(nums, l, mid);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public int strStr(String haystack, String needle) {
+        if (needle == null || needle.equals("")) return 0;
+        int[] next = new int[needle.length()];
+        next[0] = 0;
+        for (int i = 0, j = 1;j < needle.length();j++) {
+            while (i > 0 && needle.charAt(i) != needle.charAt(j)) {
+                i = next[i - 1];
             }
-            if (nums[mid] > nums[r]) {
-                return find(nums, mid + 1, r);
+            if (needle.charAt(i) == needle.charAt(j)) {
+                i++;
             }
-            return find(nums, l, r - 1);
+            next[j] = i;
         }
-        return nums[l];
+        for (int i = 0, j = 0;i < haystack.length();i++) {
+            while (j > 0 && haystack.charAt(i) != needle.charAt(j)) {
+                j = next[j];
+            }
+            if (haystack.charAt(i) == needle.charAt(j)) {
+                j++;
+            }
+            if (j == needle.length()) {
+                return i - j + 1;
+            }
+        }
+        return -1;
     }
+
+    public int countRestrictedPaths(int n, int[][] edges) {
+        Map<Integer, Map<Integer, Integer>> map = new HashMap<>();
+        for (int[] t : edges) {
+            int x = t[0], y = t[1], m = t[2];
+            Map<Integer, Integer> ma = map.getOrDefault(x, new HashMap<>());
+            ma.put(y, m);
+            map.put(x, ma);
+            Map<Integer, Integer> mb = map.getOrDefault(y, new HashMap<>());
+            mb.put(x, m);
+            map.put(y, mb);
+        }
+        int[] tab = new int[n + 1];
+        Arrays.fill(tab, Integer.MAX_VALUE);
+        tab[n] = 0;
+        boolean[] visit = new boolean[n + 1];
+        PriorityQueue<int[]> queue = new PriorityQueue<>(Comparator.comparingInt(o -> o[1]));
+        queue.add(new int[]{n, 0});
+        while (!queue.isEmpty()) {
+            int[] temp = queue.poll();
+            if (visit[temp[0]]) continue;
+            visit[temp[0]] = true;
+            Map<Integer, Integer> m = map.get(temp[0]);
+            for (Integer key : m.keySet()) {
+                int val = m.get(key) + temp[1];
+                if (val < tab[key]) {
+                    tab[key] = val;
+                    queue.add(new int[]{key, val});
+                }
+            }
+        }
+        int[][] arr = new int[n][2];
+        for (int i = 0;i < n;i++) {
+            arr[i] = new int[]{i + 1, tab[i + 1]};
+        }
+        Arrays.sort(arr, Comparator.comparingInt(o -> o[1]));
+        int[] ans = new int[n + 1];
+        ans[n] = 1;
+        for (int i = 1;i < n;i++) {
+            int index = arr[i][0], w = arr[i][1];
+            Map<Integer, Integer> m = map.get(index);
+            if (m == null) continue;
+            for (Integer e : m.keySet()) {
+                if (w > m.get(e)) {
+                    ans[index] += ans[e];
+                    ans[index] %= 1000000007;
+                }
+            }
+            if (index == 1) break;
+        }
+        return ans[1];
+    }
+
+    public boolean canCross(int[] stones) {
+        int n = stones.length;
+        boolean[][] dp = new boolean[n][n];
+        dp[0][0] = true;
+        for (int i = 1; i < n; ++i) {
+            if (stones[i] - stones[i - 1] > i) {
+                return false;
+            }
+        }
+        for (int i = 1; i < n; ++i) {
+            for (int j = i - 1; j >= 0; --j) {
+                int k = stones[i] - stones[j];
+                if (k > j + 1) {
+                    break;
+                }
+                dp[i][k] = dp[j][k - 1] || dp[j][k] || dp[j][k + 1];
+                if (i == n - 1 && dp[i][k]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    int[][] nums;
+    public int getMoneyAmount(int n) {
+        nums = new int[n + 1][n + 1];
+        for (int[] t : nums) {
+            Arrays.fill(t, -1);
+        }
+        for (int i = 1;i <= n;i++) {
+            nums[i][i] = i;
+        }
+        return find(1, n);
+    }
+
+    private int find(int l, int r) {
+        if (l > r) {
+            return 0;
+        }
+        if (nums[l][r] != -1) {
+            return nums[l][r];
+        }
+        int mid = (l + r) / 2;
+        int ans = Integer.MAX_VALUE;
+        for (int i = mid;i <= r;i++) {
+            ans = Math.min(ans, i + Math.max(find(l, i - 1), find(i + 1, r)));
+        }
+        nums[l][r] = ans;
+        return ans;
+    }
+
+    /**
+     * 1 2 3 4 5 6 7 8 9 10
+     *
+     *
+     * 6 + 12345 78910 15 34
+     * 7 123456 8910 15
+     * 8 1234567 910 28 19
+     *
+     */
+
+
+
+
+
+
+
+
 
 
 
@@ -43,79 +194,7 @@ public class Solution {
     private static Condition a = lock.newCondition();
     private static Condition b = lock.newCondition();
     private static Condition c = lock.newCondition();
-    private static int num = 1;
+    private static int anInt = 1;
 
-    public static void main(String[] args) throws InterruptedException {
-        Thread t1 = new Thread(()->{
-            while (true) {
-                lock.lock();
-                try {
-                    if (num != 1) {
-                        a.await();
-                    }
-                    System.out.println(Thread.currentThread().getName());
-                    num++;
-                    b.signal();
-                    lock.unlock();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, "A");
-        Thread t2 = new Thread(()->{
-            while (true) {
-                lock.lock();
-                try {
-                    if (num != 2) {
-                        b.await();
-                    }
-                    System.out.println(Thread.currentThread().getName());
-                    num++;
-                    c.signal();
-                    lock.unlock();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, "B");
-        Thread t3 = new Thread(()->{
-            while (true) {
-                lock.lock();
-                try {
-                    if (num != 3) {
-                        c.await();
-                    }
-                    System.out.println(Thread.currentThread().getName());
-                    num = 1;
-                    a.signal();
-                    lock.unlock();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, "C");
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
-            System.out.println("程序执行完毕, 退出");
-        }));
-        String s = "3,5,5,6,9,1,4,5,0,5],[2,7,9,5,9,5,4,9,6,8],[6,0,7,8,1,0,1,6,8,1],[7,2,6,5,8,5,6,5,0,6],[2,3," +
-                "3,1,0,4,6,5,3,5],[5,9,7,3,8,8,5,1,4,3],[2,4,7,9,9,8,4,7,3,7],[3,5,2,8,8,2,2,4,9,8";
-        String[] t = s.split("],\\[");
-        int[][] nums = new int[t.length][];
-        for (int i = 0;i < t.length;i++) {
-            String[] temp = t[i].split(",");
-            int[] num = new int[temp.length];
-            for (int j = 0;j < num.length;j++) {
-                num[j] = Integer.parseInt(temp[j]);
-            }
-            nums[i] = num;
-        }
-        for (int[] te : nums) {
-            System.out.println(Arrays.toString(te));
-        }
-        t1.start();
-        t2.start();
-        t3.start();
-        Thread.sleep(5000);
 
-    }
 }

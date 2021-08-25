@@ -25,9 +25,16 @@ public class HelloController {
 
     public void asyncTest() throws InterruptedException, ExecutionException {
         for (int i = 0;i < 100;i++) {
-            helloService2.hello(new Hello("async", "hello"));
-            CompletableFuture<RpcResponse<String>> future = RpcContext.getContext().getCompletableFuture();
-            System.out.println(future.get().getData());
+            CompletableFuture<RpcResponse<Object>> res = (CompletableFuture) helloService2.hello(new Hello("async", "hello"));
+            res.whenComplete((ret, exception) -> {
+                if (exception == null) {
+                    System.out.println(ret.getData());
+                } else {
+                    exception.printStackTrace();
+                }
+            });
+            //CompletableFuture<RpcResponse<String>> future = RpcContext.getContext().getCompletableFuture();
+            //System.out.println(future.get().getData());
             /**
             future.whenComplete((ret, exception) -> {
                 if (exception == null) {
@@ -41,7 +48,7 @@ public class HelloController {
     }
 
     public void test() throws InterruptedException {
-        String hello = this.helloService.hello(new Hello("111", "222"));
+        String hello = (String) this.helloService.hello(new Hello("111", "222"));
         //如需使用 assert 断言，需要在 VM options 添加参数：-ea
         for (int i = 0; i < 10000; i++) {
             System.out.println(helloService.hello(new Hello("111", "222")));

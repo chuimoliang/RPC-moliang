@@ -78,8 +78,11 @@ public class RpcClientProxy implements InvocationHandler {
         CompletableFuture<RpcResponse<Object>> completableFuture =
                 (CompletableFuture<RpcResponse<Object>>) rpcRequestTransport.send(rpcRequest);
         if (rpcServiceProperties.isAsyncMode()) {
+            return completableFuture;
+            /**
             RpcContext.getContext().setFuture(completableFuture);
             return null;
+             **/
         }
         rpcResponse = completableFuture.get();
         this.check(rpcResponse, rpcRequest);

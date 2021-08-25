@@ -8,6 +8,6 @@ package com.moliang.api;
 public interface HelloService {
 
 
-    String hello(Hello hello);
+    Object hello(Hello hello);
 
 }
